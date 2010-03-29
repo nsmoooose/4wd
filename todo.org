@@ -1,0 +1,10 @@
+* TASKS
+** TODO Add keyboard helper.
+   h would bring up some help. Use the built in help system of open scene graph.
+** TODO Add some physics object.
+   Simple box falling to the ground would be enough.
+** TODO Connect camera to the box.
+   Slightly above and back of the box. This makes the camera follow the movements of the box.
+** TODO Free mode camera and follow.
+   You should be able to switch with a simple key command.
+** TODO Find out the correct gravity for earth like conditions.
