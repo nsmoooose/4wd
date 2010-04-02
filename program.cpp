@@ -7,6 +7,33 @@
 #include <iostream>
 #include <string>
 
+/** Syncs movements between open scene graph and bullet world. */
+class MotionState : public btMotionState {
+public:
+	MotionState(osg::MatrixTransform* transform) {
+		m_transform = transform;
+	}
+
+	/** Returns the initial position and rotation of an object. */
+	virtual void getWorldTransform(btTransform &worldTrans) const {
+		osg::Matrix matrix = m_transform->getMatrix();
+		osg::Vec3 trans = matrix.getTrans();
+		osg::Quat quat = matrix.getRotate();
+		worldTrans.setRotation(btQuaternion(quat._v[0], quat._v[1], quat._v[2], quat._v[3]));
+		worldTrans.setOrigin(btVector3(trans._v[0], trans._v[1], trans._v[2]));
+	}
+
+	/** Alters the position and rotation of an object. */
+	virtual void setWorldTransform(const btTransform &worldTrans) {
+		btScalar ogl[16];
+		worldTrans.getOpenGLMatrix(ogl);
+		m_transform->setMatrix(osg::Matrix(ogl));
+	}
+
+private:
+	osg::ref_ptr<osg::MatrixTransform> m_transform;
+};
+
 osg::MatrixTransform *create_box(osg::Vec3 size) {
 	osg::ref_ptr<osg::Box> box = new osg::Box();
     box->setHalfLengths(size);
@@ -20,9 +47,31 @@ osg::MatrixTransform *create_box(osg::Vec3 size) {
     return transform.release();
 }
 
-osg::Node* createWorld() {
+void createWorld(osg::Group *parent, btDynamicsWorld *dynamicsWorld) {
 	osg::ref_ptr<osg::MatrixTransform> ground = create_box(osg::Vec3(10, 10, 0.01));
-	return ground.release();
+	parent->addChild(ground.get());
+
+    btRigidBody::btRigidBodyConstructionInfo rb(
+		btScalar(0.0), /* mass */
+		new MotionState(ground.get()),
+		new btBoxShape(btVector3(5, 5, 0.005)),
+		btVector3(0, 0, 0)); /* inertia */
+	dynamicsWorld->addRigidBody(new btRigidBody(rb));
+
+
+	osg::ref_ptr<osg::MatrixTransform> box = create_box(osg::Vec3(3, 3, 3));
+	osg::Matrix matrix;
+	matrix.makeRotate(45.0, osg::Vec3(1.0, 0.0, 0.0));
+	matrix.setTrans(0.0, 0.0, 8.0);
+	box->setMatrix(matrix);
+	parent->addChild(box.get());
+
+    btRigidBody::btRigidBodyConstructionInfo box_rb(
+		btScalar(1.0), /* mass */
+		new MotionState(box.get()),
+		new btBoxShape(btVector3(1.5, 1.5, 1.5)),
+		btVector3(0, 0, 0)); /* inertia */
+	dynamicsWorld->addRigidBody(new btRigidBody(box_rb));
 }
 
 int main(int argc, char *argv[]) {
@@ -35,13 +84,15 @@ int main(int argc, char *argv[]) {
     btVector3 worldAabbMax(10000, 10000, 10000);
     btBroadphaseInterface *inter = new btAxisSweep3(worldAabbMin, worldAabbMax, 1000);
     btDynamicsWorld *dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, inter, solver, collisionConfiguration);
-    dynamicsWorld->setGravity(btVector3( 0, 0, -10 ));
-
-	// btAlignedObjectArray<btCollisionShape*> m_collisionShapes;
+    dynamicsWorld->setGravity(btVector3(0, 0, -10 ));
 
 	osgViewer::Viewer viewer;
 	viewer.setUpViewInWindow(10, 30, 600, 500);
-	viewer.setSceneData(createWorld());
+
+	osg::ref_ptr<osg::Group> root = new osg::Group();
+	createWorld(root.get(), dynamicsWorld);
+
+	viewer.setSceneData(root.get());
     viewer.addEventHandler(new osgViewer::StatsHandler);
     viewer.setCameraManipulator(new osgGA::TrackballManipulator());
 
