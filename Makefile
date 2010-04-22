@@ -1,4 +1,4 @@
-OBJECTS = $(patsubst %.c,%.o,$(wildcard *.cpp))
+OBJECTS = $(patsubst %.cpp,%.o,$(wildcard *.cpp))
 #CFLAGS = $(shell pkg-config --cflags bullet)
 CFLAGS = -g -Os -Wall -pedantic -Werror
 LIBS = -lstdc++ -lBulletDynamics -lBulletCollision -losgViewer

@@ -1,12 +1,14 @@
 #include <btBulletDynamicsCommon.h>
 #include <osg/ShapeDrawable>
-#include <osg/MatrixTransform>
 #include <osgDB/ReadFile>
 #include <osgGA/TrackballManipulator>
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
 #include <iostream>
 #include <string>
+
+#include "world.h"
+#include "dynamic_box.h"
 
 /** Syncs movements between open scene graph and bullet world. */
 class MotionState : public btMotionState {
@@ -65,7 +67,20 @@ void create_box_model(osg::MatrixTransform *transform, btDynamicsWorld *dynamics
 	dynamicsWorld->addRigidBody(new btRigidBody(rb));
 }
 
-void createWorld(osg::Group *worldNode, btDynamicsWorld *dynamicsWorld) {
+btRigidBody *localCreateRigidBody(
+	float mass, const btTransform& startTransform, btCollisionShape* shape) {
+	btAssert((!shape || shape->getShapeType() != INVALID_SHAPE_PROXYTYPE));
+	bool isDynamic = (mass != 0.f);
+	btVector3 localInertia(0,0,0);
+	if (isDynamic)
+		shape->calculateLocalInertia(mass, localInertia);
+
+	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
+	btRigidBody::btRigidBodyConstructionInfo info(mass, myMotionState, shape, localInertia);
+	return new btRigidBody(info);
+}
+
+void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsWorld) {
 #if 0
 	osg::ref_ptr<osg::Node> terrain = osgDB::readNodeFile("puget.ive");
 	if(terrain) {
@@ -73,44 +88,97 @@ void createWorld(osg::Group *worldNode, btDynamicsWorld *dynamicsWorld) {
 	}
 #endif
 
-	osg::ref_ptr<osg::MatrixTransform> ground = new osg::MatrixTransform();
-	create_box_model(ground.get(), dynamicsWorld, osg::Vec3(10, 10, 0.1), btVector3(0,0,0), btScalar(0));
-	worldNode->addChild(ground.get());
+	world.addDynamicObject(
+		"ground",
+		new DynamicBox(osg::Vec3(20, 20, 0.1), btVector3(0,0,0), btScalar(0)));
 
-	osg::ref_ptr<osg::MatrixTransform> box = new osg::MatrixTransform();
+	DynamicBox *box1 = new DynamicBox(osg::Vec3(3, 3, 3), btVector3(1, 1, 1), btScalar(1.0));
+	/*
 	osg::Matrix matrix;
 	matrix.makeRotate(45.0, osg::Vec3(1.0, 0.0, 0.0));
 	matrix.setTrans(0.0, 0.0, 14.0);
-	box->setMatrix(matrix);
-	create_box_model(box.get(), dynamicsWorld, osg::Vec3(3, 3, 3), btVector3(1, 1, 1), btScalar(1.0));
-	worldNode->addChild(box.get());
+	box1->getNode()->setMatrix(matrix);
+	*/
+	world.addDynamicObject("box1", box1);
 
-	box = new osg::MatrixTransform();
-	matrix = osg::Matrix();
-	matrix.makeRotate(5.0, osg::Vec3(1.0, 0.0, 0.0));
-	matrix.setTrans(0.0, 0.0, 40.0);
-	box->setMatrix(matrix);
-	create_box_model(box.get(), dynamicsWorld, osg::Vec3(7, 3, 3), btVector3(1, 1, 1), btScalar(3.0));
-	worldNode->addChild(box.get());
+	DynamicBox *box2 = new DynamicBox(osg::Vec3(7, 3, 3), btVector3(1, 1, 1), btScalar(3.0));
+	/*
+	osg::Matrix matrix;
+	matrix.makeRotate(45.0, osg::Vec3(1.0, 0.0, 0.0));
+	matrix.setTrans(0.0, 0.0, 14.0);
+	box1->getNode()->setMatrix(matrix);
+	*/
+	world.addDynamicObject("box2", box2);
+
+#if 0
+	btTransform transform;
+	transform.setIdentity();
+	transform.setOrigin(btVector3(0,-10,0));
+
+	btCompoundShape* car_shape = new btCompoundShape();
+
+	btCollisionShape* suppShape = new btBoxShape(btVector3(0.5f,0.1f,0.5f));
+	btTransform local_trans;
+	local_trans.setIdentity();
+	local_trans.setOrigin(btVector3(0,1.0,2.5));
+	car_shape->addChildShape(suppLocalTrans, suppShape);
+
+	btRigidBody *carChassis = localCreateRigidBody(800.0f, transform, car_shape);
+	int rightIndex = 0;
+	int upIndex = 2;
+	int forwardIndex = 1;
+#define CUBE_HALF_EXTENTS 1
+	float wheelRadius = 0.5f;
+	float wheelWidth = 0.4f;
+	float wheelFriction = 1000;//BT_LARGE_FLOAT;
+	float suspensionStiffness = 20.f;
+	float suspensionDamping = 2.3f;
+	float suspensionCompression = 4.4f;
+	float rollInfluence = 0.1f;//1.0f;
+	btScalar suspensionRestLength(0.6);
+	btVector3 wheelDirectionCS0(0,0,-1);
+	btVector3 wheelAxleCS(1,0,0);
+
+
+
+	btRaycastVehicle::btVehicleTuning tuning;
+	btVehicleRaycaster *vehicleRayCaster = new btDefaultVehicleRaycaster(dynamicsWorld);
+	btRaycastVehicle *vehicle = new btRaycastVehicle(tuning, carChassis, vehicleRayCaster);
+	carChassis->setActivationState(DISABLE_DEACTIVATION);
+	dynamicsWorld->addVehicle(vehicle);
+
+	float connectionHeight = 1.2f;
+	vehicle->setCoordinateSystem(rightIndex, upIndex, forwardIndex);
+	btVector3 connectionPointCS0(CUBE_HALF_EXTENTS-(0.3*wheelWidth),2*CUBE_HALF_EXTENTS-wheelRadius, connectionHeight);
+	vehicle->addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS, suspensionRestLength, wheelRadius, tuning, true);
+	connectionPointCS0 = btVector3(-CUBE_HALF_EXTENTS+(0.3*wheelWidth),2*CUBE_HALF_EXTENTS-wheelRadius, connectionHeight);
+	vehicle->addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS, suspensionRestLength, wheelRadius, tuning, true);
+
+	connectionPointCS0 = btVector3(-CUBE_HALF_EXTENTS+(0.3*wheelWidth),-2*CUBE_HALF_EXTENTS+wheelRadius, connectionHeight);
+	vehicle->addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS, suspensionRestLength, wheelRadius, tuning, false);
+	connectionPointCS0 = btVector3(CUBE_HALF_EXTENTS-(0.3*wheelWidth),-2*CUBE_HALF_EXTENTS+wheelRadius, connectionHeight);
+	vehicle->addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS, suspensionRestLength, wheelRadius, tuning, false);
+
+	for (int i=0;i<vehicle->getNumWheels();i++) {
+		btWheelInfo& wheel = vehicle->getWheelInfo(i);
+		wheel.m_suspensionStiffness = suspensionStiffness;
+		wheel.m_wheelsDampingRelaxation = suspensionDamping;
+		wheel.m_wheelsDampingCompression = suspensionCompression;
+		wheel.m_frictionSlip = wheelFriction;
+		wheel.m_rollInfluence = rollInfluence;
+	}
+#endif
 }
 
 int main(int argc, char *argv[]) {
 	std::cout << "Starting 4WD" << std::endl;
 
-	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
-    btCollisionDispatcher *dispatcher = new btCollisionDispatcher(collisionConfiguration);
-    btConstraintSolver *solver = new btSequentialImpulseConstraintSolver();
-    btVector3 worldAabbMin(-10000, -10000, -10000);
-    btVector3 worldAabbMax(10000, 10000, 10000);
-    btBroadphaseInterface *inter = new btDbvtBroadphase();
-    btDynamicsWorld *dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, inter, solver, collisionConfiguration);
-    dynamicsWorld->setGravity(btVector3(0, 0, -10));
-
 	osgViewer::Viewer viewer;
 	viewer.setUpViewInWindow(10, 30, 600, 500);
 
-	osg::ref_ptr<osg::Group> root = new osg::Group();
-	createWorld(root.get(), dynamicsWorld);
+	World world;
+	osg::ref_ptr<osg::Group> root = world.getRoot();
+	createWorld(world, root.get(), world.getDynamics());
 
 	viewer.setSceneData(root.get());
     viewer.addEventHandler(new osgViewer::StatsHandler);
@@ -123,7 +191,7 @@ int main(int argc, char *argv[]) {
     while( !viewer.done() )
     {
         double currSimTime = viewer.getFrameStamp()->getSimulationTime();
-        dynamicsWorld->stepSimulation( currSimTime - prevSimTime );
+        world.getDynamics()->stepSimulation( currSimTime - prevSimTime );
         prevSimTime = currSimTime;
         viewer.frame();
     }
