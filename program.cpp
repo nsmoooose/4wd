@@ -9,34 +9,7 @@
 
 #include "world.h"
 #include "dynamic_box.h"
-
-/** Syncs movements between open scene graph and bullet world. */
-class MotionState : public btMotionState {
-public:
-	MotionState(osg::MatrixTransform* transform) {
-		m_transform = transform;
-	}
-
-	/** Returns the initial position and rotation of an object. */
-	virtual void getWorldTransform(btTransform &worldTrans) const {
-		osg::Matrix matrix = m_transform->getMatrix();
-		osg::Vec3 trans = matrix.getTrans();
-		osg::Quat quat = matrix.getRotate();
-		worldTrans.setRotation(btQuaternion(quat._v[0], quat._v[1], quat._v[2], quat._v[3]));
-		worldTrans.setOrigin(btVector3(trans._v[0], trans._v[1], trans._v[2]));
-	}
-
-	/** Alters the position and rotation of an object. */
-	virtual void setWorldTransform(const btTransform &worldTrans) {
-		btScalar ogl[16];
-		worldTrans.getOpenGLMatrix(ogl);
-		m_transform->setMatrix(osg::Matrix(ogl));
-	}
-
-private:
-	osg::ref_ptr<osg::MatrixTransform> m_transform;
-};
-
+#include "motion_state.h"
 /*
    osg::Cylinder(const osg::Vec3 &center, float radius, float height)
    btCylinderShape(const btVector3 &halfExtents);
@@ -93,6 +66,9 @@ void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsW
 		new DynamicBox(osg::Vec3(20, 20, 0.1), btVector3(0,0,0), btScalar(0)));
 
 	DynamicBox *box1 = new DynamicBox(osg::Vec3(3, 3, 3), btVector3(1, 1, 1), btScalar(1.0));
+	btTransform box1_pos;
+	box1_pos.setOrigin(btVector3(0, 0, 14));
+	box1->getBody()->setWorldTransform(box1_pos);
 	/*
 	osg::Matrix matrix;
 	matrix.makeRotate(45.0, osg::Vec3(1.0, 0.0, 0.0));
@@ -102,6 +78,9 @@ void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsW
 	world.addDynamicObject("box1", box1);
 
 	DynamicBox *box2 = new DynamicBox(osg::Vec3(7, 3, 3), btVector3(1, 1, 1), btScalar(3.0));
+	btTransform box2_pos;
+	box2_pos.setOrigin(btVector3(0, 0, 33));
+	box2->getBody()->setWorldTransform(box2_pos);
 	/*
 	osg::Matrix matrix;
 	matrix.makeRotate(45.0, osg::Vec3(1.0, 0.0, 0.0));
