@@ -10,6 +10,8 @@ public:
 	osg::MatrixTransform *getNode();
 	btRigidBody *getBody();
 
+	void setRotation(float angle, float x, float y, float z);
+
 	void setPosition(float x, float y, float z);
 
 protected:

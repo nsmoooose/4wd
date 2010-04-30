@@ -1,3 +1,4 @@
+#include <cmath>
 #include "dynamic_object.h"
 
 DynamicObject::DynamicObject() : m_transform(new osg::MatrixTransform) {
@@ -11,17 +12,21 @@ osg::MatrixTransform *DynamicObject::getNode() {
 	return m_transform.get();
 }
 
-	/*
-	osg::Matrix matrix;
-	matrix.makeRotate(45.0, osg::Vec3(1.0, 0.0, 0.0));
-	matrix.setTrans(0.0, 0.0, 14.0);
-	box1->getNode()->setMatrix(matrix);
-	*/
-
-
 void DynamicObject::setPosition(float x, float y, float z) {
-	btTransform pos;
-	pos.setIdentity();
+	btTransform &pos = getBody()->getWorldTransform();
 	pos.setOrigin(btVector3(x, y, z));
-	getBody()->setWorldTransform(pos);
+}
+
+void DynamicObject::setRotation(float angle, float x, float y, float z) {
+	double inversenorm  = 1.0/sqrt(x*x + y*y + z*z);
+	double coshalfangle = cos(0.5*angle);
+	double sinhalfangle = sin(0.5*angle);
+
+	float _x = x * sinhalfangle * inversenorm;
+	float _y = y * sinhalfangle * inversenorm;
+	float _z = z * sinhalfangle * inversenorm;
+	float _w = coshalfangle;
+
+	btTransform &pos = getBody()->getWorldTransform();
+	pos.setRotation(btQuaternion(_x, _y, _z, _w));
 }

@@ -66,10 +66,12 @@ void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsW
 		new DynamicBox(osg::Vec3(20, 20, 0.1), btVector3(0,0,0), btScalar(0)));
 
 	DynamicBox *box1 = new DynamicBox(osg::Vec3(0.4, 0.4, 5), btVector3(1, 1, 1), btScalar(1.0));
+	box1->setRotation(5.0, 1.0, 0.0, 0.0);
 	box1->setPosition(0, 0, 14);
 	world.addDynamicObject("box1", box1);
 
 	DynamicBox *box2 = new DynamicBox(osg::Vec3(7, 3, 3), btVector3(1, 1, 1), btScalar(3.0));
+	box2->setRotation(-45.0, 0.0, 1.0, 0.0);
 	box2->setPosition(0, 0, 33);
 	world.addDynamicObject("box2", box2);
 
