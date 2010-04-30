@@ -13,13 +13,6 @@
 
 
 void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsWorld) {
-#if 0
-	osg::ref_ptr<osg::Node> terrain = osgDB::readNodeFile("puget.ive");
-	if(terrain) {
-		worldNode->addChild(terrain.get());
-	}
-#endif
-
 	world.addDynamicObject(
 		"ground",
 		new DynamicBox(osg::Vec3(20, 20, 0.1), btVector3(0,0,0), btScalar(0)));
