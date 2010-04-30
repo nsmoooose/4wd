@@ -10,6 +10,8 @@ public:
 	osg::MatrixTransform *getNode();
 	btRigidBody *getBody();
 
+	void setPosition(float x, float y, float z);
+
 protected:
 	osg::ref_ptr<osg::MatrixTransform> m_transform;
 	btRigidBody *m_rigid_body;

@@ -65,28 +65,12 @@ void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsW
 		"ground",
 		new DynamicBox(osg::Vec3(20, 20, 0.1), btVector3(0,0,0), btScalar(0)));
 
-	DynamicBox *box1 = new DynamicBox(osg::Vec3(3, 3, 3), btVector3(1, 1, 1), btScalar(1.0));
-	btTransform box1_pos;
-	box1_pos.setOrigin(btVector3(0, 0, 14));
-	box1->getBody()->setWorldTransform(box1_pos);
-	/*
-	osg::Matrix matrix;
-	matrix.makeRotate(45.0, osg::Vec3(1.0, 0.0, 0.0));
-	matrix.setTrans(0.0, 0.0, 14.0);
-	box1->getNode()->setMatrix(matrix);
-	*/
+	DynamicBox *box1 = new DynamicBox(osg::Vec3(0.4, 0.4, 5), btVector3(1, 1, 1), btScalar(1.0));
+	box1->setPosition(0, 0, 14);
 	world.addDynamicObject("box1", box1);
 
 	DynamicBox *box2 = new DynamicBox(osg::Vec3(7, 3, 3), btVector3(1, 1, 1), btScalar(3.0));
-	btTransform box2_pos;
-	box2_pos.setOrigin(btVector3(0, 0, 33));
-	box2->getBody()->setWorldTransform(box2_pos);
-	/*
-	osg::Matrix matrix;
-	matrix.makeRotate(45.0, osg::Vec3(1.0, 0.0, 0.0));
-	matrix.setTrans(0.0, 0.0, 14.0);
-	box1->getNode()->setMatrix(matrix);
-	*/
+	box2->setPosition(0, 0, 33);
 	world.addDynamicObject("box2", box2);
 
 #if 0
