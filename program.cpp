@@ -11,7 +11,6 @@
 #include "dynamic_box.h"
 #include "motion_state.h"
 
-
 void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsWorld) {
 	world.addDynamicObject(
 		"ground",
@@ -26,6 +25,27 @@ void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsW
 	box2->setRotation(-45.0, 0.0, 1.0, 0.0);
 	box2->setPosition(0, 0, 33);
 	world.addDynamicObject("box2", box2);
+
+	DynamicCylinder *cyl1 = new DynamicCylinder(2, 2, btVector3(1, 1, 1), btScalar(10.0));
+	cyl1->setRotation(-45.0, 0.0, 1.0, 0.0);
+	cyl1->setPosition(0, 0, 80);
+	world.addDynamicObject("cyl1", cyl1);
+
+	DynamicSphere *sphere1 = new DynamicSphere(2, btVector3(1, 1, 1), btScalar(10.0));
+	sphere1->setPosition(0, 0, 4);
+	world.addDynamicObject("sphere1", sphere1);
+
+	DynamicSphere *sphere2 = new DynamicSphere(2, btVector3(1, 1, 1), btScalar(10.0));
+	sphere2->setPosition(0, 3, 5);
+	world.addDynamicObject("sphere2", sphere2);
+
+	DynamicSphere *sphere3 = new DynamicSphere(1.4, btVector3(1, 1, 1), btScalar(10.0));
+	sphere3->setPosition(3, 0, 6);
+	world.addDynamicObject("sphere3", sphere3);
+
+	DynamicVehicle *vehicle1 = new DynamicVehicle();
+	vehicle1->setPosition(10, 0, 80);
+	world.addDynamicObject("vehicle1", vehicle1);
 }
 
 int main(int argc, char *argv[]) {

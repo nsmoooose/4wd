@@ -7,6 +7,7 @@
 class DynamicObject {
 public:
 	DynamicObject();
+	virtual ~DynamicObject() {}
 	osg::MatrixTransform *getNode();
 	btRigidBody *getBody();
 

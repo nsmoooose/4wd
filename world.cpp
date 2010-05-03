@@ -1,3 +1,4 @@
+#include "dynamic_box.h"
 #include "world.h"
 
 World::World() : m_root(new osg::Group) {
@@ -22,5 +23,15 @@ btDynamicsWorld *World::getDynamics() {
 void World::addDynamicObject(const std::string &id, DynamicObject *object) {
 	m_dynamic_objects[id] = object;
 	m_root->addChild(object->getNode());
-	m_dynamics->addRigidBody(object->getBody());
+	DynamicVehicle *vehicle = dynamic_cast<DynamicVehicle*>(object);
+	if(vehicle) {
+		btRigidBody *body = vehicle->getBody();
+		btRaycastVehicle::btVehicleTuning tuning;
+		btVehicleRaycaster *vehicleRayCaster = new btDefaultVehicleRaycaster(m_dynamics);
+		btRaycastVehicle *vehicle_raycast = new btRaycastVehicle(tuning, body, vehicleRayCaster);
+		m_dynamics->addVehicle(vehicle_raycast);
+	}
+	else {
+		m_dynamics->addRigidBody(object->getBody());
+	}
 }
