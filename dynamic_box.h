@@ -11,13 +11,6 @@ public:
 private:
 };
 
-class DynamicCylinder : public DynamicObject {
-public:
-	DynamicCylinder(float radius, float height, btVector3 inertia, btScalar mass);
-
-private:
-};
-
 class DynamicSphere : public DynamicObject {
 public:
 	DynamicSphere(float radius, btVector3 inertia, btScalar mass);
