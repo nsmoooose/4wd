@@ -10,6 +10,7 @@
 #include "world.h"
 #include "dynamic_box.h"
 #include "dynamic_cylinder.h"
+#include "dynamic_sphere.h"
 #include "motion_state.h"
 
 void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsWorld) {
