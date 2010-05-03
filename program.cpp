@@ -11,7 +11,7 @@
 #include "dynamic_box.h"
 #include "dynamic_cylinder.h"
 #include "dynamic_sphere.h"
-#include "motion_state.h"
+#include "dynamic_vehicle.h"
 
 void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsWorld) {
 	world.addDynamicObject(

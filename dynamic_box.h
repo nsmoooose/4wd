@@ -11,11 +11,4 @@ public:
 private:
 };
 
-class DynamicVehicle : public DynamicObject {
-public:
-	DynamicVehicle();
-
-private:
-};
-
 #endif

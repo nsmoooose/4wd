@@ -1,4 +1,4 @@
-#include "dynamic_box.h"
+#include "dynamic_vehicle.h"
 #include "world.h"
 
 World::World() : m_root(new osg::Group) {
