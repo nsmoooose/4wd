@@ -1,10 +1,23 @@
 * TASKS
+** TODO graphics archive
+*** TODO Build target to create an osg archive
+	rm 4wd.osga
+	osgarchive -a 4wd.osga -i filename filename
+	osgarchive -a 4wd.osga -l
+	osgviewer 4wd.osga/myfile.ive
+*** TODO Automatic export from blender to ive
+	Every time a .blend file changes we do want to reexport that file and converted into
+	.ive file format. Is this possible with some command line option to blender or do we
+	need to write some python script?
+
+	No command line option it seems. Python script is the way to do it I guess.
+** TODO Generate a bullet shape from osg model.
 ** TODO Add keyboard helper.
    h would bring up some help. Use the built in help system of open scene graph.
-** TODO Add some physics object.
-   Simple box falling to the ground would be enough.
 ** TODO Connect camera to the box.
    Slightly above and back of the box. This makes the camera follow the movements of the box.
 ** TODO Free mode camera and follow.
    You should be able to switch with a simple key command.
 ** TODO Find out the correct gravity for earth like conditions.
+** DONE Add some physics object.
+   Simple box falling to the ground would be enough.
