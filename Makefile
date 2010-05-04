@@ -1,16 +1,12 @@
-OBJECTS = $(patsubst %.cpp,%.o,$(wildcard *.cpp))
-#CFLAGS = $(shell pkg-config --cflags bullet)
-CFLAGS = -g -Os -Wall -pedantic -Werror
+CXXFLAGS = -g -Os -Wall -pedantic -Werror
 LIBS = -lstdc++ -lBulletDynamics -lBulletCollision -losgViewer
-
-MODELS = $(wildcard models/*.ive) $(wildcard models/*.png)
 
 all: 4wd 4wd.osga
 
-4wd: $(OBJECTS)
+4wd: $(patsubst %.cpp,%.o,$(wildcard *.cpp))
 	$(CC) $(LIBS) $(CFLAGS) -o $@ $^
 
-4wd.osga: $(MODELS)
+4wd.osga: $(wildcard models/*.ive) $(wildcard models/*.png)
 	$(RM) 4wd.osga
 	osgarchive -a $@ -i $^
 

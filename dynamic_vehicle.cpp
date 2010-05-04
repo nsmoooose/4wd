@@ -93,7 +93,7 @@ DynamicVehicle::DynamicVehicle() {
 
 
 	btCompoundShape *vehicle_shape = new btCompoundShape();
-	btCollisionShape *chassis_shape = new btBoxShape(btVector3(5.0f, 1.0f, 5.0f));
+	/* btCollisionShape *chassis_shape = new btBoxShape(btVector3(5.0f, 1.0f, 5.0f)); */
 	/*
 	btTransform local_trans;
 	local_trans.setIdentity();
