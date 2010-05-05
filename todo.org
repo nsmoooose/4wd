@@ -1,4 +1,6 @@
 * TASKS
+** TODO Jeep Wrangler model in blender
+   http://en.wikipedia.org/wiki/Jeep_Wrangler
 ** TODO Generate a bullet shape from osg model.
 	blender -b dummy.blend -P blender_export.py -- dummy.dxf
 ** TODO Add keyboard helper.
@@ -22,3 +24,6 @@
 	No command line option it seems. Python script is the way to do it I guess.
 ** DONE Add some physics object.
    Simple box falling to the ground would be enough.
+
+This seems to fix issues when starting blender on my old laptop
+LIBGL_ALWAYS_SOFTWARE=1 blender
