@@ -6,7 +6,7 @@
 
 class DynamicCylinder : public DynamicObject {
 public:
-	DynamicCylinder(float radius, float height, btVector3 inertia, btScalar mass);
+	DynamicCylinder(float radius, float height, btScalar mass);
 
 private:
 };

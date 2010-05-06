@@ -3,7 +3,7 @@
 #include "dynamic_box.h"
 #include "motion_state.h"
 
-DynamicBox::DynamicBox(osg::Vec3 size, btVector3 inertia, btScalar mass) {
+DynamicBox::DynamicBox(osg::Vec3 size, btScalar mass) {
 	osg::ref_ptr<osg::Box> box = new osg::Box();
 	box->setHalfLengths(size);
 	osg::ref_ptr<osg::ShapeDrawable> shape = new osg::ShapeDrawable(box);
@@ -13,6 +13,7 @@ DynamicBox::DynamicBox(osg::Vec3 size, btVector3 inertia, btScalar mass) {
 
 	btBoxShape *box_shape = new btBoxShape(
 		btVector3(size._v[0], size._v[1], size._v[2]));
+	btVector3 inertia(0, 0, 0);
 	if(mass != 0.0f) {
 		box_shape->calculateLocalInertia(mass, inertia);
 	}

@@ -6,7 +6,7 @@
 
 class DynamicBox : public DynamicObject {
 public:
-	DynamicBox(osg::Vec3 size, btVector3 inertia, btScalar mass);
+	DynamicBox(osg::Vec3 size, btScalar mass);
 
 private:
 };

@@ -3,7 +3,7 @@
 #include "dynamic_sphere.h"
 #include "motion_state.h"
 
-DynamicSphere::DynamicSphere(float radius, btVector3 inertia, btScalar mass) {
+DynamicSphere::DynamicSphere(float radius, btScalar mass) {
 	osg::ref_ptr<osg::Sphere> osg_shape = new osg::Sphere();
 	osg_shape->setRadius(radius);
 	osg::ref_ptr<osg::ShapeDrawable> osg_drawable = new osg::ShapeDrawable(osg_shape);
@@ -15,6 +15,7 @@ DynamicSphere::DynamicSphere(float radius, btVector3 inertia, btScalar mass) {
 	btScalar bt_radius(radius);
 	btMultiSphereShape *bt_shape = new btMultiSphereShape(
 		&bt_pos, &bt_radius, 1);
+	btVector3 inertia(0, 0, 0);
 	if(mass != 0.0f) {
 		bt_shape->calculateLocalInertia(mass, inertia);
 	}

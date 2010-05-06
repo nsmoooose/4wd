@@ -5,7 +5,7 @@
 
 class DynamicSphere : public DynamicObject {
 public:
-	DynamicSphere(float radius, btVector3 inertia, btScalar mass);
+	DynamicSphere(float radius, btScalar mass);
 
 private:
 };

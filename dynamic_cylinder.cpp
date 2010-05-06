@@ -3,7 +3,7 @@
 #include "dynamic_cylinder.h"
 #include "motion_state.h"
 
-DynamicCylinder::DynamicCylinder(float radius, float height, btVector3 inertia, btScalar mass) {
+DynamicCylinder::DynamicCylinder(float radius, float height, btScalar mass) {
 	osg::ref_ptr<osg::Cylinder> osg_shape = new osg::Cylinder();
 	osg_shape->setRadius(radius);
 	osg_shape->setHeight(height);
@@ -14,6 +14,7 @@ DynamicCylinder::DynamicCylinder(float radius, float height, btVector3 inertia, 
 
 	btCylinderShape *bt_shape = new btCylinderShape(
 		btVector3(radius, radius, height / 2.0));
+	btVector3 inertia(0, 0, 0);
 	if(mass != 0.0f) {
 		bt_shape->calculateLocalInertia(mass, inertia);
 	}
