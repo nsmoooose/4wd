@@ -1,5 +1,3 @@
-#if 0
-
 #include <osg/Transform>
 #include <osg/Drawable>
 #include <osg/Geode>
@@ -11,9 +9,6 @@
 #include <iostream>
 
 #include "tools.h"
-
-using namespace osgbBullet;
-using namespace osg;
 
 class ComputeTriMeshVisitor : public osg::NodeVisitor {
 public:
@@ -131,5 +126,3 @@ btTriangleMeshShape* btTriMeshCollisionShapeFromOSG( osg::Node* node ) {
     btBvhTriangleMeshShape* meshShape = new btBvhTriangleMeshShape( mesh, true );
     return( meshShape );
 }
-
-#endif

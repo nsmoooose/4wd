@@ -7,11 +7,12 @@
 #include <iostream>
 #include <string>
 
-#include "world.h"
 #include "dynamic_box.h"
 #include "dynamic_cylinder.h"
+#include "dynamic_model.h"
 #include "dynamic_sphere.h"
 #include "dynamic_vehicle.h"
+#include "world.h"
 
 void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsWorld) {
 	world.addDynamicObject(
@@ -45,9 +46,16 @@ void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsW
 	sphere3->setPosition(3, 0, 6);
 	world.addDynamicObject("sphere3", sphere3);
 
+	DynamicModel *model1 = new DynamicModel("4wd.osga/models/wheel.ive", btScalar(12));
+	model1->setRotation(90.0, 1.0, 0.0, 0.0);
+	model1->setPosition(0, 0, 89);
+	world.addDynamicObject("model1", model1);
+
+#if 0
 	DynamicVehicle *vehicle1 = new DynamicVehicle();
 	vehicle1->setPosition(10, 0, 80);
 	world.addDynamicObject("vehicle1", vehicle1);
+#endif
 }
 
 int main(int argc, char *argv[]) {
