@@ -47,7 +47,7 @@ void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsW
 	world.addDynamicObject("sphere3", sphere3);
 
 	DynamicModel *model1 = new DynamicModel("4wd.osga/models/wheel.ive", btScalar(12));
-	model1->setRotation(90.0, 1.0, 0.0, 0.0);
+	/* model1->setRotation(90.0, 1.0, 0.0, 0.0); */
 	model1->setPosition(0, 0, 3);
 	world.addDynamicObject("model1", model1);
 
