@@ -4,11 +4,7 @@
 #include <osg/Geometry>
 #include <osg/PrimitiveSet>
 #include <osg/TriangleFunctor>
-
-#include <osgbBullet/ComputeTriMeshVisitor.h>
-
 #include <iostream>
-
 #include "tools.h"
 
 class ComputeTriMeshVisitor : public osg::NodeVisitor {
