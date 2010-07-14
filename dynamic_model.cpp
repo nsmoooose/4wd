@@ -20,6 +20,16 @@ DynamicModel::DynamicModel(const char *path, btScalar mass) {
 	if(mass != 0.0f) {
 		shape->calculateLocalInertia(mass, inertia);
 	}
+
+	/* Use compound shape to change the center of mass. */
+	/*
+	btCompoundShape* compound = new btCompoundShape();
+	btTransform local_trans;
+	local_trans.setIdentity();
+	local_trans.setOrigin(btVector3(0,0,1));
+	compound->addChildShape(local_trans, shape);
+	*/
+
     btRigidBody::btRigidBodyConstructionInfo rb(
 		mass,
 		new MotionState(getNode()),

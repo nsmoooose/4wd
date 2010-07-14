@@ -240,13 +240,27 @@ btConvexHullShape* btConvexHullCollisionShapeFromOSG(osg::Node* node) {
     }
     btScalar* btvp = btverts;
 
+	float x_min=10000, x_max=-10000;
+	float y_min=10000, y_max=-10000;
+	float z_min=10000, z_max=-10000;
+
     osg::Vec3Array::const_iterator itr;
     for( itr = v->begin(); itr != v->end(); itr++ ) {
         const osg::Vec3& s( *itr );
-        *btvp++ = (btScalar)( s[ 0 ] );
-        *btvp++ = (btScalar)( s[ 1 ] );
-        *btvp++ = (btScalar)( s[ 2 ] );
+        *btvp++ = (btScalar)( s[0] );
+        *btvp++ = (btScalar)( s[1] );
+        *btvp++ = (btScalar)( s[2] );
+
+		x_min = std::min(x_min, s[0]);
+		x_max = std::max(x_max, s[0]);
+		y_min = std::min(y_min, s[1]);
+		y_max = std::max(y_max, s[1]);
+		z_min = std::min(z_min, s[2]);
+		z_max = std::max(z_max, s[2]);
     }
+	std::cout << "x: " << x_min << ", " << x_max << std::endl;
+	std::cout << "y: " << y_min << ", " << y_max << std::endl;
+	std::cout << "z: " << z_min << ", " << z_max << std::endl;
     btConvexHullShape* chs = new btConvexHullShape( btverts, v->size(), sizeof( btScalar ) * 3 );
     delete[] btverts;
     return( chs );
