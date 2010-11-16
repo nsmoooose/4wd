@@ -16,9 +16,12 @@
 #include "world.h"
 
 void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsWorld) {
+	// world.addDynamicObject(
+	// 	"ground",
+	// 	new DynamicBox(osg::Vec3(180, 180, 0.1), btScalar(0)));
 	world.addDynamicObject(
 		"ground",
-		new DynamicBox(osg::Vec3(180, 180, 0.1), btScalar(0)));
+		new DynamicModel("4wd.osga/models/ground.ive", btScalar(0)));
 
 #if 0
 	DynamicCylinder *cyl1 = new DynamicCylinder(2, 2, btScalar(3.0));
@@ -65,6 +68,23 @@ int main(int argc, char *argv[]) {
 	World world;
 	osg::ref_ptr<osg::Group> root = world.getRoot();
 	createWorld(world, root.get(), world.getDynamics());
+
+	osg::Group* lightGroup = new osg::Group;
+	osg::Light* light = new osg::Light;
+    light->setLightNum(0);
+    light->setPosition(osg::Vec4(10, 10, 100, 1.0f));
+    light->setAmbient(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    light->setDiffuse(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    light->setSpotCutoff(90.0f);
+    light->setSpotExponent(0.0f);
+    light->setDirection(osg::Vec3(0.0f, 0.0f, -1.0f));
+	light->setLinearAttenuation(0.1);
+	osg::LightSource* light_source = new osg::LightSource;
+    light_source->setLight(light);
+    light_source->setLocalStateSetModes(osg::StateAttribute::ON);
+    //light_source->setStateSetModes(*rootStateSet,osg::StateAttribute::ON);
+    lightGroup->addChild(light_source);
+	root->addChild(lightGroup);
 
 	viewer.setSceneData(root.get());
     viewer.addEventHandler(new osgViewer::StatsHandler);

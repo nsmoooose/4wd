@@ -15,7 +15,7 @@ DynamicModel::DynamicModel(const char *path, btScalar mass) {
 	}
 	getNode()->addChild(model.get());
 
-	btConvexHullShape *shape = btConvexHullCollisionShapeFromOSG(model.get());
+	btTriangleMeshShape *shape = btTriMeshCollisionShapeFromOSG(model.get());
 	btVector3 inertia(0, 0, 0);
 	if(mass != 0.0f) {
 		shape->calculateLocalInertia(mass, inertia);

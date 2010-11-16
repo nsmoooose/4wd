@@ -261,3 +261,4 @@ btConvexHullShape* btConvexHullCollisionShapeFromOSG(osg::Node* node) {
     delete[] btverts;
     return( chs );
 }
+
