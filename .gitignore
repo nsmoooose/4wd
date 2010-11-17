@@ -1,4 +1,9 @@
 4wd
 4wd.osga
-*.o
+*.blend1
 *.ive
+*.log
+*.o
+*.osg
+*.ive
+

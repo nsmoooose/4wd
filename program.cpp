@@ -16,45 +16,13 @@
 #include "world.h"
 
 void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsWorld) {
-	// world.addDynamicObject(
-	// 	"ground",
-	// 	new DynamicBox(osg::Vec3(180, 180, 0.1), btScalar(0)));
 	world.addDynamicObject(
 		"ground",
 		new DynamicModel("4wd.osga/models/ground.ive", btScalar(0)));
 
-#if 0
-	DynamicCylinder *cyl1 = new DynamicCylinder(2, 2, btScalar(3.0));
-	// cyl1->setRotation(-45.0, 1.0, 0.0, 0.0);
-	cyl1->setPosition(0, 0, 80);
-	world.addDynamicObject("cyl1", cyl1);
-
-	DynamicSphere *sphere1 = new DynamicSphere(2, btScalar(10.0));
-	sphere1->setPosition(0, 0, 20);
-	world.addDynamicObject("sphere1", sphere1);
-
-	DynamicSphere *sphere2 = new DynamicSphere(2, btScalar(10.0));
-	sphere2->setPosition(0, 3, 5);
-	world.addDynamicObject("sphere2", sphere2);
-
-	DynamicSphere *sphere3 = new DynamicSphere(1.4, btScalar(10.0));
-	sphere3->setPosition(3, 0, 6);
-	world.addDynamicObject("sphere3", sphere3);
-
-	DynamicModel *model1 = new DynamicModel("4wd.osga/models/procera.ive", btScalar(12));
-	model1->setRotation(90.0, 1.0, 0.0, 0.0);
-	model1->setPosition(0, 0, 150);
-	world.addDynamicObject("model1", model1);
-
-	DynamicModel *model2 = new DynamicModel("4wd.osga/models/hollow_box.ive", btScalar(12));
-	model2->setRotation(90.0, 1.0, 0.0, 0.0);
-	model2->setPosition(0, 0, 100);
-	world.addDynamicObject("model2", model2);
-
-	DynamicVehicle *vehicle1 = new DynamicVehicle();
-	vehicle1->setPosition(10, 0, 80);
-	world.addDynamicObject("vehicle1", vehicle1);
-#endif
+	DynamicModel* vehicle = new DynamicModel("4wd.osga/models/hmmwv.ive", btScalar(30));
+	vehicle->setPosition(0, 0, 80);
+	world.addDynamicObject("vehicle", vehicle);
 }
 
 int main(int argc, char *argv[]) {
@@ -69,6 +37,7 @@ int main(int argc, char *argv[]) {
 	osg::ref_ptr<osg::Group> root = world.getRoot();
 	createWorld(world, root.get(), world.getDynamics());
 
+	/*
 	osg::Group* lightGroup = new osg::Group;
 	osg::Light* light = new osg::Light;
     light->setLightNum(0);
@@ -85,6 +54,7 @@ int main(int argc, char *argv[]) {
     //light_source->setStateSetModes(*rootStateSet,osg::StateAttribute::ON);
     lightGroup->addChild(light_source);
 	root->addChild(lightGroup);
+	*/
 
 	viewer.setSceneData(root.get());
     viewer.addEventHandler(new osgViewer::StatsHandler);
@@ -103,7 +73,6 @@ int main(int argc, char *argv[]) {
         viewer.frame();
 
 		if(currSimTime > lastEvent + 1.0) {
-			
 			DynamicBox *box2 = new DynamicBox(osg::Vec3(rand() % 10 + 1, rand() % 10 + 1, rand() % 10 + 1), btScalar(rand() % 10 + 1));
 			box2->setRotation(rand() % 100, 0.0, 1.0, 0.0);
 			box2->setPosition(rand() % 100 - 50, rand() % 100 - 50, rand() % 100 + 50);

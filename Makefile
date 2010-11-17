@@ -12,13 +12,13 @@ all: 4wd 4wd.osga
 	osgarchive -a $@ -i $^
 
 clean:
-	$(RM) 4wd *.o 4wd.osga models/*.ive models/*.dxf
+	$(RM) 4wd *.o 4wd.osga models/*.ive models/*.osg
 
-%.dxf: %.blend
-	blender -b $< -P models/blender_export.py -- $@ > /dev/null
+%.osg: %.blend
+	blender -b $< -P models/blender_export.py -- $@
 
-%.ive: %.dxf
+%.ive: %.osg
 	osgconv $< $@
 
 install:
-	cp 4wd /usr/libexec/gnome-screensaver
+	cp 4wd /usr/bin
