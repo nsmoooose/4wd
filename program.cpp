@@ -20,7 +20,7 @@ void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsW
 		"ground",
 		new DynamicModel("4wd.osga/models/ground.ive", btScalar(0)));
 
-	DynamicModel* vehicle = new DynamicModel("4wd.osga/models/hmmwv.ive", btScalar(30));
+	DynamicModel* vehicle = new DynamicModel("4wd.osga/models/hmmwv.ive", btScalar(30), true);
 	vehicle->setPosition(0, 0, 80);
 	world.addDynamicObject("vehicle", vehicle);
 }
@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
         viewer.frame();
 
 		if(currSimTime > lastEvent + 1.0) {
-			DynamicBox *box2 = new DynamicBox(osg::Vec3(rand() % 10 + 1, rand() % 10 + 1, rand() % 10 + 1), btScalar(rand() % 10 + 1));
+			DynamicBox *box2 = new DynamicBox(osg::Vec3(rand() % 2 + 1, rand() % 2 + 1, rand() % 2 + 1), btScalar(rand() % 10 + 1));
 			box2->setRotation(rand() % 100, 0.0, 1.0, 0.0);
 			box2->setPosition(rand() % 100 - 50, rand() % 100 - 50, rand() % 100 + 50);
 			world.addDynamicObject("box2", box2);

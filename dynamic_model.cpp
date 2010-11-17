@@ -6,7 +6,7 @@
 #include "motion_state.h"
 #include "tools.h"
 
-DynamicModel::DynamicModel(const char *path, btScalar mass) {
+DynamicModel::DynamicModel(const char *path, btScalar mass, bool hull) {
 	osg::ref_ptr<osg::Node> model;
 	model = osgDB::readNodeFile(path);
 	if(!model) {
@@ -15,7 +15,12 @@ DynamicModel::DynamicModel(const char *path, btScalar mass) {
 	}
 	getNode()->addChild(model.get());
 
-	btTriangleMeshShape *shape = btTriMeshCollisionShapeFromOSG(model.get());
+	btCollisionShape* shape = NULL;
+	if(hull)
+		shape = btConvexHullCollisionShapeFromOSG(model.get());
+	else
+		shape = btTriMeshCollisionShapeFromOSG(model.get());
+
 	btVector3 inertia(0, 0, 0);
 	if(mass != 0.0f) {
 		shape->calculateLocalInertia(mass, inertia);
