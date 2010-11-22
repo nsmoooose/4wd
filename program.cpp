@@ -3,6 +3,9 @@
 #include <osg/ShapeDrawable>
 #include <osgDB/ReadFile>
 #include <osgGA/TrackballManipulator>
+#include <osgShadow/ParallelSplitShadowMap>
+#include <osgShadow/SoftShadowMap>
+#include <osgShadow/ShadowedScene>
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
 #include <iostream>
@@ -33,9 +36,19 @@ int main(int argc, char *argv[]) {
 	osgViewer::Viewer viewer;
 	viewer.setUpViewInWindow(10, 30, 600, 500);
 
-	World world;
-	osg::ref_ptr<osg::Group> root = world.getRoot();
-	createWorld(world, root.get(), world.getDynamics());
+	osg::ref_ptr<osg::Group> root = new osg::Group();
+
+	osg::ref_ptr<osgShadow::ShadowedScene> shadowedScene = new osgShadow::ShadowedScene;
+	root->addChild(shadowedScene.get());
+
+	/*
+	const int ReceivesShadowTraversalMask = 0x1;
+	const int CastsShadowTraversalMask = 0x2;
+	shadowedScene->setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
+	shadowedScene->setCastsShadowTraversalMask(CastsShadowTraversalMask);
+	osg::ref_ptr<osgShadow::SoftShadowMap> sm = new osgShadow::SoftShadowMap;
+	shadowedScene->setShadowTechnique(sm.get());
+	*/
 
 	/*
 	osg::Group* lightGroup = new osg::Group;
@@ -55,6 +68,10 @@ int main(int argc, char *argv[]) {
     lightGroup->addChild(light_source);
 	root->addChild(lightGroup);
 	*/
+
+	World world;
+	world.setRoot(shadowedScene.get());
+	createWorld(world, shadowedScene.get(), world.getDynamics());
 
 	viewer.setSceneData(root.get());
     viewer.addEventHandler(new osgViewer::StatsHandler);

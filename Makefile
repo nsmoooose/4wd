@@ -1,5 +1,5 @@
 CXXFLAGS = -g -Os -Wall -pedantic -Werror
-LIBS = -lstdc++ -lBulletDynamics -lBulletCollision -losgViewer -lm -lLinearMath -losgGA -losgDB -losg -lOpenThreads
+LIBS = -lstdc++ -lBulletDynamics -lBulletCollision -losgViewer -losgShadow -lm -lLinearMath -losgGA -losgDB -losg -lOpenThreads
 
 all: 4wd 4wd.osga
 

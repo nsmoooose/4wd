@@ -11,6 +11,7 @@ public:
 	World();
 
 	osg::Group *getRoot();
+	void setRoot(osg::Group* root) { m_root = root; }
 	btDynamicsWorld *getDynamics();
 
 	void addDynamicObject(const std::string &id, DynamicObject *object);
