@@ -15,6 +15,7 @@ public:
 	btDynamicsWorld *getDynamics();
 
 	void addDynamicObject(const std::string &id, DynamicObject *object);
+	DynamicObject* getDynamicObject(const std::string &id);
 
 private:
 	typedef std::map<std::string, DynamicObject*> dynamic_map;

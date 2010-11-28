@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <osg/ShapeDrawable>
 #include <osgDB/ReadFile>
+#include <osgGA/NodeTrackerManipulator>
 #include <osgGA/StateSetManipulator>
 #include <osgGA/TrackballManipulator>
 #include <osgShadow/ParallelSplitShadowMap>
@@ -20,7 +21,7 @@
 #include "dynamic_vehicle.h"
 #include "world.h"
 
-void configureDisplay(osgViewer::CompositeViewer& viewer, osg::Group *scene) {
+void configureDisplay(osgViewer::CompositeViewer& viewer, osg::Group *scene, osg::Node* hmmwv) {
 	osg::GraphicsContext::WindowingSystemInterface* wsi = osg::GraphicsContext::getWindowingSystemInterface();
 	if (!wsi) {
 		osg::notify(osg::NOTICE) << "Error, no WindowSystemInterface available, cannot create windows." << std::endl;
@@ -57,13 +58,17 @@ void configureDisplay(osgViewer::CompositeViewer& viewer, osg::Group *scene) {
 		view->getCamera()->setName("Cam one");
 		view->getCamera()->setViewport(new osg::Viewport(0,0, traits->width, traits->height/3 * 2 - 2));
 		view->getCamera()->setGraphicsContext(gc.get());
-		view->setCameraManipulator(new osgGA::TrackballManipulator);
 		view->addEventHandler( new osgViewer::StatsHandler );
 		view->addEventHandler( new osgViewer::HelpHandler );
 		view->addEventHandler( new osgViewer::WindowSizeHandler );
 		osg::ref_ptr<osgGA::StateSetManipulator> statesetManipulator = new osgGA::StateSetManipulator;
 		statesetManipulator->setStateSet(view->getCamera()->getOrCreateStateSet());
 		view->addEventHandler( statesetManipulator.get() );
+		osg::ref_ptr<osgGA::NodeTrackerManipulator> trackerManipulator = new osgGA::NodeTrackerManipulator();
+		trackerManipulator->setTrackNode(hmmwv);
+        trackerManipulator->setTrackerMode( osgGA::NodeTrackerManipulator::NODE_CENTER_AND_ROTATION );
+		trackerManipulator->setRotationMode( osgGA::NodeTrackerManipulator::TRACKBALL );
+		view->setCameraManipulator(trackerManipulator.get());
 	}
 
 	{
@@ -114,6 +119,8 @@ void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsW
 int main(int argc, char *argv[]) {
 	std::cout << "Starting 4WD" << std::endl;
 
+	// osg::setNotifyLevel(osg::DEBUG_INFO);
+
 	srand(time(NULL));
 
 	osg::ref_ptr<osg::Group> root = new osg::Group();
@@ -155,7 +162,7 @@ int main(int argc, char *argv[]) {
 	world.setRoot(shadowedScene.get());
 	createWorld(world, shadowedScene.get(), world.getDynamics());
 
-	configureDisplay(viewer, root.get());
+	configureDisplay(viewer, root.get(), world.getDynamicObject("vehicle")->getNode()->getChild(0));
 
     double prevSimTime = viewer.getFrameStamp()->getSimulationTime();
 	double lastEvent = prevSimTime;

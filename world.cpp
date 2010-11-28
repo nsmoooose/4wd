@@ -35,3 +35,7 @@ void World::addDynamicObject(const std::string &id, DynamicObject *object) {
 		m_dynamics->addRigidBody(object->getBody());
 	}
 }
+
+DynamicObject* World::getDynamicObject(const std::string &id) {
+	return m_dynamic_objects[id];
+}
