@@ -2,10 +2,12 @@
 #include <cstdlib>
 #include <osg/ShapeDrawable>
 #include <osgDB/ReadFile>
+#include <osgGA/StateSetManipulator>
 #include <osgGA/TrackballManipulator>
 #include <osgShadow/ParallelSplitShadowMap>
 #include <osgShadow/SoftShadowMap>
 #include <osgShadow/ShadowedScene>
+#include <osgViewer/CompositeViewer>
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
 #include <iostream>
@@ -17,6 +19,87 @@
 #include "dynamic_sphere.h"
 #include "dynamic_vehicle.h"
 #include "world.h"
+
+void configureDisplay(osgViewer::CompositeViewer& viewer, osg::Group *scene) {
+	osg::GraphicsContext::WindowingSystemInterface* wsi = osg::GraphicsContext::getWindowingSystemInterface();
+	if (!wsi) {
+		osg::notify(osg::NOTICE) << "Error, no WindowSystemInterface available, cannot create windows." << std::endl;
+		return;
+	}
+
+	unsigned int width, height;
+	wsi->getScreenResolution(osg::GraphicsContext::ScreenIdentifier(0), width, height);
+
+	osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;
+	traits->x = 100;
+	traits->y = 100;
+	traits->width = 1000;
+	traits->height = 800;
+	traits->windowDecoration = true;
+	traits->doubleBuffer = true;
+	traits->sharedContext = 0;
+
+	osg::ref_ptr<osg::GraphicsContext> gc = osg::GraphicsContext::createGraphicsContext(traits.get());
+	if (gc.valid()) {
+		osg::notify(osg::INFO)<<"  GraphicsWindow has been created successfully."<<std::endl;
+		gc->setClearColor(osg::Vec4f(0.2f,0.2f,0.6f,1.0f));
+		gc->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+	else {
+		osg::notify(osg::NOTICE)<<"  GraphicsWindow has not been created successfully."<<std::endl;
+	}
+
+	{
+		osgViewer::View* view = new osgViewer::View;
+		view->setName("View one");
+		viewer.addView(view);
+		view->setSceneData(scene);
+		view->getCamera()->setName("Cam one");
+		view->getCamera()->setViewport(new osg::Viewport(0,0, traits->width, traits->height/3 * 2 - 2));
+		view->getCamera()->setGraphicsContext(gc.get());
+		view->setCameraManipulator(new osgGA::TrackballManipulator);
+		view->addEventHandler( new osgViewer::StatsHandler );
+		view->addEventHandler( new osgViewer::HelpHandler );
+		view->addEventHandler( new osgViewer::WindowSizeHandler );
+		osg::ref_ptr<osgGA::StateSetManipulator> statesetManipulator = new osgGA::StateSetManipulator;
+		statesetManipulator->setStateSet(view->getCamera()->getOrCreateStateSet());
+		view->addEventHandler( statesetManipulator.get() );
+	}
+
+	{
+		osgViewer::View* view = new osgViewer::View;
+		view->setName("View one");
+		viewer.addView(view);
+		view->setSceneData(scene);
+		view->getCamera()->setName("Cam two");
+		view->getCamera()->setViewport(new osg::Viewport(0, traits->height/3 * 2 + 2, traits->width / 2, traits->height/3 - 1));
+		view->getCamera()->setGraphicsContext(gc.get());
+		view->setCameraManipulator(new osgGA::TrackballManipulator);
+		view->addEventHandler( new osgViewer::StatsHandler );
+		view->addEventHandler( new osgViewer::HelpHandler );
+		view->addEventHandler( new osgViewer::WindowSizeHandler );
+		osg::ref_ptr<osgGA::StateSetManipulator> statesetManipulator = new osgGA::StateSetManipulator;
+		statesetManipulator->setStateSet(view->getCamera()->getOrCreateStateSet());
+		view->addEventHandler( statesetManipulator.get() );
+	}
+
+	{
+		osgViewer::View* view = new osgViewer::View;
+		view->setName("View one");
+		viewer.addView(view);
+		view->setSceneData(scene);
+		view->getCamera()->setName("Cam two");
+		view->getCamera()->setViewport(new osg::Viewport(traits->width/2 + 2, traits->height/3 * 2 + 2, traits->width / 2, traits->height/3 - 1));
+		view->getCamera()->setGraphicsContext(gc.get());
+		view->setCameraManipulator(new osgGA::TrackballManipulator);
+		view->addEventHandler( new osgViewer::StatsHandler );
+		view->addEventHandler( new osgViewer::HelpHandler );
+		view->addEventHandler( new osgViewer::WindowSizeHandler );
+		osg::ref_ptr<osgGA::StateSetManipulator> statesetManipulator = new osgGA::StateSetManipulator;
+		statesetManipulator->setStateSet(view->getCamera()->getOrCreateStateSet());
+		view->addEventHandler( statesetManipulator.get() );
+	}
+}
 
 void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsWorld) {
 	world.addDynamicObject(
@@ -33,10 +116,9 @@ int main(int argc, char *argv[]) {
 
 	srand(time(NULL));
 
-	osgViewer::Viewer viewer;
-	viewer.setUpViewInWindow(10, 30, 600, 500);
-
 	osg::ref_ptr<osg::Group> root = new osg::Group();
+
+	osgViewer::CompositeViewer viewer;
 
 	osg::ref_ptr<osgShadow::ShadowedScene> shadowedScene = new osgShadow::ShadowedScene;
 	root->addChild(shadowedScene.get());
@@ -73,15 +155,10 @@ int main(int argc, char *argv[]) {
 	world.setRoot(shadowedScene.get());
 	createWorld(world, shadowedScene.get(), world.getDynamics());
 
-	viewer.setSceneData(root.get());
-    viewer.addEventHandler(new osgViewer::StatsHandler);
-    viewer.addEventHandler(new osgViewer::HelpHandler);
-    viewer.addEventHandler(new osgViewer::WindowSizeHandler);
-    viewer.setCameraManipulator(new osgGA::TrackballManipulator());
+	configureDisplay(viewer, root.get());
 
     double prevSimTime = viewer.getFrameStamp()->getSimulationTime();
 	double lastEvent = prevSimTime;
-    viewer.realize();
     while( !viewer.done() )
     {
         double currSimTime = viewer.getFrameStamp()->getSimulationTime();

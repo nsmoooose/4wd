@@ -12,7 +12,7 @@ all: 4wd 4wd.osga
 	osgarchive -a $@ -i $^
 
 clean:
-	$(RM) 4wd *.o 4wd.osga models/*.ive models/*.osg
+	$(RM) 4wd *.o 4wd.osga models/*.ive models/*.osg models/*.log models/*.blend1
 
 %.osg: %.blend
 	blender -b $< -P models/blender_export.py -- $@
