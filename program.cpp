@@ -226,10 +226,28 @@ int main(int argc, char *argv[]) {
         viewer.frame();
 
 		if(currSimTime > lastEvent + 1.0) {
-			DynamicBox *box2 = new DynamicBox(osg::Vec3(rand() % 2 + 1, rand() % 2 + 1, rand() % 2 + 1), btScalar(rand() % 10 + 1));
-			box2->setRotation(rand() % 100, 0.0, 1.0, 0.0);
-			box2->setPosition(rand() % 100 - 50, rand() % 100 - 50, rand() % 100 + 50);
-			world.addDynamicObject("box2", box2);
+			DynamicObject *object = NULL;
+			switch(rand() % 3) {
+			case 0:
+				object = new DynamicBox(osg::Vec3(rand() % 2 + 1, rand() % 2 + 1, rand() % 2 + 1), btScalar(rand() % 10 + 1));
+				object->setRotation(rand() % 100, 0.0, 1.0, 0.0);
+				object->setPosition(rand() % 100 - 50, rand() % 100 - 50, rand() % 100 + 50);
+				break;
+			case 1:
+				object = new DynamicSphere(rand() % 5 + 1, btScalar(rand() % 10 + 1));
+				object->setRotation(rand() % 100, 0.0, 1.0, 0.0);
+				object->setPosition(rand() % 100 - 50, rand() % 100 - 50, rand() % 100 + 50);
+				break;
+			case 2:
+				object = new DynamicCylinder(rand() % 2 + 1, rand() % 3 + 1, btScalar(rand() % 10 + 1));
+				object->setRotation(rand() % 100, 0.0, 1.0, 0.0);
+				object->setPosition(rand() % 100 - 50, rand() % 100 - 50, rand() % 100 + 50);
+				break;
+			default:
+				return 0;
+			}
+			world.addDynamicObject("object", object);
+
 			lastEvent = currSimTime;
 		}
     }
