@@ -72,7 +72,7 @@ public:
 	}
 };
 
-void configureDisplay(osgViewer::CompositeViewer& viewer, osg::Group *scene, osg::Node* hmmwv) {
+void configureDisplay(osgViewer::CompositeViewer& viewer, osg::Group *scene, DynamicObject* object) {
 	osg::GraphicsContext::WindowingSystemInterface* wsi = osg::GraphicsContext::getWindowingSystemInterface();
 	if (!wsi) {
 		osg::notify(osg::NOTICE) << "Error, no WindowSystemInterface available, cannot create windows." << std::endl;
@@ -117,10 +117,16 @@ void configureDisplay(osgViewer::CompositeViewer& viewer, osg::Group *scene, osg
 		statesetManipulator->setStateSet(view->getCamera()->getOrCreateStateSet());
 		view->addEventHandler( statesetManipulator.get() );
 		osg::ref_ptr<osgGA::NodeTrackerManipulator> trackerManipulator = new osgGA::NodeTrackerManipulator();
-		trackerManipulator->setTrackNode(hmmwv);
-        trackerManipulator->setTrackerMode( osgGA::NodeTrackerManipulator::NODE_CENTER_AND_ROTATION );
-		trackerManipulator->setRotationMode( osgGA::NodeTrackerManipulator::TRACKBALL );
-		view->setCameraManipulator(trackerManipulator.get());
+		if(object != NULL) {
+			osg::Node* trackingNode = object->getNode()->getChild(0);
+			trackerManipulator->setTrackNode(trackingNode);
+			trackerManipulator->setTrackerMode( osgGA::NodeTrackerManipulator::NODE_CENTER_AND_ROTATION );
+			trackerManipulator->setRotationMode( osgGA::NodeTrackerManipulator::TRACKBALL );
+			view->setCameraManipulator(trackerManipulator.get());
+		}
+		else {
+			view->setCameraManipulator(new osgGA::TrackballManipulator);
+		}
 	}
 
 	{
@@ -163,9 +169,13 @@ void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsW
 		"ground",
 		new DynamicModel("4wd.osga/models/ground.ive", btScalar(0)));
 
-	DynamicModel* vehicle = new DynamicModel("4wd.osga/models/hmmwv.ive", btScalar(30), true);
-	vehicle->setPosition(0, 0, 80);
-	world.addDynamicObject("vehicle", vehicle);
+	DynamicModel* model = new DynamicModel("4wd.osga/models/hmmwv.ive", btScalar(30), true);
+	model->setPosition(0, 0, 80);
+	world.addDynamicObject("model", model);
+
+	DynamicVehicle* vehicle = new DynamicVehicle(world.getDynamics());
+	vehicle->setPosition(20, 20, 80);
+	// world.addDynamicObject("vehicle", vehicle);
 }
 
 int main(int argc, char *argv[]) {
@@ -214,7 +224,7 @@ int main(int argc, char *argv[]) {
 	world.setRoot(shadowedScene.get());
 	createWorld(world, shadowedScene.get(), world.getDynamics());
 
-	configureDisplay(viewer, root.get(), world.getDynamicObject("vehicle")->getNode()->getChild(0));
+	configureDisplay(viewer, root.get(), world.getDynamicObject("vehicle"));
 
     double prevSimTime = viewer.getFrameStamp()->getSimulationTime();
 	double lastEvent = prevSimTime;
@@ -234,12 +244,12 @@ int main(int argc, char *argv[]) {
 				object->setPosition(rand() % 100 - 50, rand() % 100 - 50, rand() % 100 + 50);
 				break;
 			case 1:
-				object = new DynamicSphere(rand() % 5 + 1, btScalar(rand() % 10 + 1));
+				object = new DynamicSphere(rand() % 2 + 1, btScalar(rand() % 10 + 1));
 				object->setRotation(rand() % 100, 0.0, 1.0, 0.0);
 				object->setPosition(rand() % 100 - 50, rand() % 100 - 50, rand() % 100 + 50);
 				break;
 			case 2:
-				object = new DynamicCylinder(rand() % 2 + 1, rand() % 3 + 1, btScalar(rand() % 10 + 1));
+				object = new DynamicCylinder(rand() % 2 + 1, rand() % 8 + 1, btScalar(rand() % 1 + 1));
 				object->setRotation(rand() % 100, 0.0, 1.0, 0.0);
 				object->setPosition(rand() % 100 - 50, rand() % 100 - 50, rand() % 100 + 50);
 				break;

@@ -1,4 +1,5 @@
 #include <osg/Geode>
+#include <osg/Quat>
 #include <osg/ShapeDrawable>
 #include "dynamic_cylinder.h"
 #include "motion_state.h"
@@ -12,7 +13,7 @@ DynamicCylinder::DynamicCylinder(float radius, float height, btScalar mass) {
 	osg_geode->addDrawable(osg_drawable.get());
 	getNode()->addChild(osg_geode.get());
 
-	btCylinderShape *bt_shape = new btCylinderShape(
+	btCylinderShape *bt_shape = new btCylinderShapeZ(
 		btVector3(radius, radius, height / 2.0));
 	btVector3 inertia(0, 0, 0);
 	if(mass != 0.0f) {

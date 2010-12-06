@@ -6,7 +6,26 @@
 
 class DynamicVehicle : public DynamicObject {
 public:
-	DynamicVehicle();
+	DynamicVehicle(btDynamicsWorld* dynamicsWorld);
+
+	btRaycastVehicle *m_vehicle;
+
+	float engineForce;
+	float breakingForce;
+
+	float maxEngineForce;
+	float maxBreakingForce;
+
+	float vehicleSteering;
+	float steeringIncrement;
+	float steeringClamp;
+	float wheelRadius;
+	float wheelWidth;
+	float wheelFriction;
+	float suspensionStiffness;
+	float suspensionDamping;
+	float suspensionCompression;
+	float rollInfluence;
 
 private:
 };

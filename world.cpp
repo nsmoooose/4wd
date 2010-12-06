@@ -25,11 +25,7 @@ void World::addDynamicObject(const std::string &id, DynamicObject *object) {
 	m_root->addChild(object->getNode());
 	DynamicVehicle *vehicle = dynamic_cast<DynamicVehicle*>(object);
 	if(vehicle) {
-		btRigidBody *body = vehicle->getBody();
-		btRaycastVehicle::btVehicleTuning tuning;
-		btVehicleRaycaster *vehicleRayCaster = new btDefaultVehicleRaycaster(m_dynamics);
-		btRaycastVehicle *vehicle_raycast = new btRaycastVehicle(tuning, body, vehicleRayCaster);
-		m_dynamics->addVehicle(vehicle_raycast);
+		m_dynamics->addVehicle(vehicle->m_vehicle);
 	}
 	else {
 		m_dynamics->addRigidBody(object->getBody());
