@@ -21,6 +21,57 @@
 #include "dynamic_vehicle.h"
 #include "world.h"
 
+class VehicleKeyboardHandler : public osgGA::GUIEventHandler {
+public:
+	virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, osg::Object*, osg::NodeVisitor*) {
+		switch(ea.getEventType()) {
+		case osgGA::GUIEventAdapter::KEYDOWN:
+			std::cout << "keydown" << std::endl;
+
+			switch(ea.getKey()) {
+			case osgGA::GUIEventAdapter::KEY_Down:
+				std::cout << "down" << std::endl;
+				return true;
+			case osgGA::GUIEventAdapter::KEY_Up:
+				std::cout << "up" << std::endl;
+				return true;
+			case osgGA::GUIEventAdapter::KEY_Left:
+				std::cout << "left" << std::endl;
+				return true;
+			case osgGA::GUIEventAdapter::KEY_Right:
+				std::cout << "right" << std::endl;
+				return true;
+			default:
+				return false;
+			}
+
+		case osgGA::GUIEventAdapter::KEYUP:
+			std::cout << "keyup" << std::endl;
+
+			switch(ea.getKey()) {
+			case osgGA::GUIEventAdapter::KEY_Down:
+				std::cout << "down" << std::endl;
+				return true;
+			case osgGA::GUIEventAdapter::KEY_Up:
+				std::cout << "up" << std::endl;
+				return true;
+			case osgGA::GUIEventAdapter::KEY_Left:
+				std::cout << "left" << std::endl;
+				return true;
+			case osgGA::GUIEventAdapter::KEY_Right:
+				std::cout << "right" << std::endl;
+				return true;
+			default:
+				return false;
+			}
+
+		default:
+			return false;
+		}
+		return false;
+	}
+};
+
 void configureDisplay(osgViewer::CompositeViewer& viewer, osg::Group *scene, osg::Node* hmmwv) {
 	osg::GraphicsContext::WindowingSystemInterface* wsi = osg::GraphicsContext::getWindowingSystemInterface();
 	if (!wsi) {
@@ -58,9 +109,10 @@ void configureDisplay(osgViewer::CompositeViewer& viewer, osg::Group *scene, osg
 		view->getCamera()->setName("Cam one");
 		view->getCamera()->setViewport(new osg::Viewport(0,0, traits->width, traits->height/3 * 2 - 2));
 		view->getCamera()->setGraphicsContext(gc.get());
-		view->addEventHandler( new osgViewer::StatsHandler );
-		view->addEventHandler( new osgViewer::HelpHandler );
-		view->addEventHandler( new osgViewer::WindowSizeHandler );
+		view->addEventHandler(new osgViewer::StatsHandler);
+		view->addEventHandler(new osgViewer::HelpHandler);
+		view->addEventHandler(new osgViewer::WindowSizeHandler);
+		view->addEventHandler(new VehicleKeyboardHandler());
 		osg::ref_ptr<osgGA::StateSetManipulator> statesetManipulator = new osgGA::StateSetManipulator;
 		statesetManipulator->setStateSet(view->getCamera()->getOrCreateStateSet());
 		view->addEventHandler( statesetManipulator.get() );
