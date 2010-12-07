@@ -25,7 +25,7 @@ void World::addDynamicObject(const std::string &id, DynamicObject *object) {
 	m_root->addChild(object->getNode());
 	DynamicVehicle *vehicle = dynamic_cast<DynamicVehicle*>(object);
 	if(vehicle) {
-		m_dynamics->addVehicle(vehicle->m_vehicle);
+		m_dynamics->addAction(vehicle->m_vehicle);
 	}
 	else {
 		m_dynamics->addRigidBody(object->getBody());

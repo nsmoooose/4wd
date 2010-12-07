@@ -124,7 +124,7 @@ DynamicVehicle::DynamicVehicle(btDynamicsWorld *dynamicsWorld) {
 
 	btRaycastVehicle::btVehicleTuning tuning;
 	btVehicleRaycaster *vehicleRayCaster = new btDefaultVehicleRaycaster(dynamicsWorld);
-	btRaycastVehicle *m_vehicle = new btRaycastVehicle(tuning, m_rigid_body, vehicleRayCaster);
+	m_vehicle = new btRaycastVehicle(tuning, m_rigid_body, vehicleRayCaster);
 	m_rigid_body->setActivationState(DISABLE_DEACTIVATION);
 
 	int rightIndex = 0;

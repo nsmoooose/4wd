@@ -175,7 +175,7 @@ void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsW
 
 	DynamicVehicle* vehicle = new DynamicVehicle(world.getDynamics());
 	vehicle->setPosition(20, 20, 80);
-	// world.addDynamicObject("vehicle", vehicle);
+	world.addDynamicObject("vehicle", vehicle);
 }
 
 int main(int argc, char *argv[]) {
