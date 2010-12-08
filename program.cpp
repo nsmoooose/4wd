@@ -231,9 +231,6 @@ int main(int argc, char *argv[]) {
     while( !viewer.done() )
     {
         double currSimTime = viewer.getFrameStamp()->getSimulationTime();
-        world.getDynamics()->stepSimulation( currSimTime - prevSimTime );
-        prevSimTime = currSimTime;
-        viewer.frame();
 
 		if(currSimTime > lastEvent + 1.0) {
 			DynamicObject *object = NULL;
@@ -260,6 +257,10 @@ int main(int argc, char *argv[]) {
 
 			lastEvent = currSimTime;
 		}
+
+        world.getDynamics()->stepSimulation( currSimTime - prevSimTime );
+        prevSimTime = currSimTime;
+        viewer.frame();
     }
 	return 0;
 }
