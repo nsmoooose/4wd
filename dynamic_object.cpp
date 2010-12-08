@@ -15,6 +15,11 @@ osg::MatrixTransform *DynamicObject::getNode() {
 void DynamicObject::setPosition(float x, float y, float z) {
 	btTransform &pos = getBody()->getWorldTransform();
 	pos.setOrigin(btVector3(x, y, z));
+
+	/* Force update the position in open scene graph. */
+	btScalar ogl[16];
+	pos.getOpenGLMatrix(ogl);
+	getNode()->setMatrix(osg::Matrix(ogl));
 }
 
 void DynamicObject::setRotation(float angle, float x, float y, float z) {
@@ -29,4 +34,9 @@ void DynamicObject::setRotation(float angle, float x, float y, float z) {
 
 	btTransform &pos = getBody()->getWorldTransform();
 	pos.setRotation(btQuaternion(_x, _y, _z, _w));
+
+	/* Force update the position in open scene graph. */
+	btScalar ogl[16];
+	pos.getOpenGLMatrix(ogl);
+	getNode()->setMatrix(osg::Matrix(ogl));
 }
