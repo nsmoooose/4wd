@@ -26,6 +26,7 @@ void World::addDynamicObject(const std::string &id, DynamicObject *object) {
 	DynamicVehicle *vehicle = dynamic_cast<DynamicVehicle*>(object);
 	if(vehicle) {
 		m_dynamics->addAction(vehicle->m_vehicle);
+		m_dynamics->addRigidBody(vehicle->getBody());
 	}
 	else {
 		m_dynamics->addRigidBody(object->getBody());
