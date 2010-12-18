@@ -4,20 +4,22 @@
 #include <btBulletDynamicsCommon.h>
 #include <osg/MatrixTransform>
 
+class World;
+
 class DynamicObject {
 public:
 	DynamicObject();
 	virtual ~DynamicObject() {}
 	osg::MatrixTransform *getNode();
-	btRigidBody *getBody();
 
 	void setRotation(float angle, float x, float y, float z);
-
 	void setPosition(float x, float y, float z);
+
+	virtual btRigidBody *getBody() = 0;
+	virtual void addToWorld(World* world) = 0;
 
 protected:
 	osg::ref_ptr<osg::MatrixTransform> m_transform;
-	btRigidBody *m_rigid_body;
 };
 
 #endif

@@ -22,15 +22,7 @@ btDynamicsWorld *World::getDynamics() {
 
 void World::addDynamicObject(const std::string &id, DynamicObject *object) {
 	m_dynamic_objects[id] = object;
-	m_root->addChild(object->getNode());
-	DynamicVehicle *vehicle = dynamic_cast<DynamicVehicle*>(object);
-	if(vehicle) {
-		m_dynamics->addAction(vehicle->m_vehicle);
-		m_dynamics->addRigidBody(vehicle->getBody());
-	}
-	else {
-		m_dynamics->addRigidBody(object->getBody());
-	}
+	object->addToWorld(this);
 }
 
 DynamicObject* World::getDynamicObject(const std::string &id) {

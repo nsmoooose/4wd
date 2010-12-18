@@ -8,7 +8,11 @@ class DynamicBox : public DynamicObject {
 public:
 	DynamicBox(osg::Vec3 size, btScalar mass);
 
+	virtual btRigidBody *getBody();
+	virtual void addToWorld(World* world);
+
 private:
+	btRigidBody *m_rigid_body;
 };
 
 #endif

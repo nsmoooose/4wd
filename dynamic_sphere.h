@@ -7,7 +7,11 @@ class DynamicSphere : public DynamicObject {
 public:
 	DynamicSphere(float radius, btScalar mass);
 
+	virtual btRigidBody *getBody();
+	virtual void addToWorld(World* world);
+
 private:
+	btRigidBody *m_rigid_body;
 };
 
 #endif

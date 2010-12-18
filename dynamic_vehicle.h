@@ -8,6 +8,9 @@ class DynamicVehicle : public DynamicObject {
 public:
 	DynamicVehicle(btDynamicsWorld* dynamicsWorld);
 
+	virtual btRigidBody *getBody();
+	virtual void addToWorld(World* world);
+
 	btRaycastVehicle *m_vehicle;
 
 	float engineForce;
@@ -28,6 +31,7 @@ public:
 	float rollInfluence;
 
 private:
+	btRigidBody *m_rigid_body;
 };
 
 #endif

@@ -2,8 +2,9 @@
 #include <osg/ShapeDrawable>
 #include "dynamic_box.h"
 #include "motion_state.h"
+#include "world.h"
 
-DynamicBox::DynamicBox(osg::Vec3 size, btScalar mass) {
+DynamicBox::DynamicBox(osg::Vec3 size, btScalar mass) : m_rigid_body(NULL) {
 	osg::ref_ptr<osg::Box> box = new osg::Box();
 	box->setHalfLengths(size);
 	osg::ref_ptr<osg::ShapeDrawable> shape = new osg::ShapeDrawable(box);
@@ -23,4 +24,13 @@ DynamicBox::DynamicBox(osg::Vec3 size, btScalar mass) {
 		box_shape,
 		inertia);
 	m_rigid_body = new btRigidBody(rb);
+}
+
+btRigidBody *DynamicBox::getBody() {
+	return m_rigid_body;
+}
+
+void DynamicBox::addToWorld(World* world) {
+	world->getDynamics()->addRigidBody(m_rigid_body);
+	world->getRoot()->addChild(getNode());
 }

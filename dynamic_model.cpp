@@ -5,8 +5,9 @@
 #include "dynamic_model.h"
 #include "motion_state.h"
 #include "tools.h"
+#include "world.h"
 
-DynamicModel::DynamicModel(const char *path, btScalar mass, bool hull) {
+DynamicModel::DynamicModel(const char *path, btScalar mass, bool hull) : m_rigid_body(NULL) {
 	osg::ref_ptr<osg::Node> model;
 	model = osgDB::readNodeFile(path);
 	if(!model) {
@@ -41,4 +42,13 @@ DynamicModel::DynamicModel(const char *path, btScalar mass, bool hull) {
 		shape,
 		inertia);
 	m_rigid_body = new btRigidBody(rb);
+}
+
+btRigidBody *DynamicModel::getBody() {
+	return m_rigid_body;
+}
+
+void DynamicModel::addToWorld(World* world) {
+	world->getDynamics()->addRigidBody(m_rigid_body);
+	world->getRoot()->addChild(getNode());
 }

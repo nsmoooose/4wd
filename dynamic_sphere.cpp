@@ -2,8 +2,9 @@
 #include <osg/ShapeDrawable>
 #include "dynamic_sphere.h"
 #include "motion_state.h"
+#include "world.h"
 
-DynamicSphere::DynamicSphere(float radius, btScalar mass) {
+DynamicSphere::DynamicSphere(float radius, btScalar mass) : m_rigid_body(NULL) {
 	osg::ref_ptr<osg::Sphere> osg_shape = new osg::Sphere();
 	osg_shape->setRadius(radius);
 	osg::ref_ptr<osg::ShapeDrawable> osg_drawable = new osg::ShapeDrawable(osg_shape);
@@ -25,4 +26,13 @@ DynamicSphere::DynamicSphere(float radius, btScalar mass) {
 		bt_shape,
 		inertia);
 	m_rigid_body = new btRigidBody(rb);
+}
+
+btRigidBody *DynamicSphere::getBody() {
+	return m_rigid_body;
+}
+
+void DynamicSphere::addToWorld(World* world) {
+	world->getDynamics()->addRigidBody(m_rigid_body);
+	world->getRoot()->addChild(getNode());
 }

@@ -1,9 +1,9 @@
 * TASKS
 ** TODO Jeep Wrangler model in blender
    http://en.wikipedia.org/wiki/Jeep_Wrangler
-** TODO Generate a bullet shape from osg model.
+** DONE Generate a bullet shape from osg model.
 	blender -b dummy.blend -P blender_export.py -- dummy.dxf
-** TODO Connect camera to the box.
+** DONE Connect camera to the box.
    Slightly above and back of the box. This makes the camera follow the movements of the box.
 ** TODO Free mode camera and follow.
    You should be able to switch with a simple key command.

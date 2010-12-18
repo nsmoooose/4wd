@@ -2,6 +2,7 @@
 #include <osg/ShapeDrawable>
 #include "dynamic_vehicle.h"
 #include "motion_state.h"
+#include "world.h"
 
 btRigidBody *localCreateRigidBody(
 	float mass, const btTransform& startTransform, btCollisionShape* shape) {
@@ -16,7 +17,7 @@ btRigidBody *localCreateRigidBody(
 	return new btRigidBody(info);
 }
 
-DynamicVehicle::DynamicVehicle(btDynamicsWorld *dynamicsWorld) {
+DynamicVehicle::DynamicVehicle(btDynamicsWorld *dynamicsWorld) : m_rigid_body(NULL) {
 	engineForce = 0.f;
 	breakingForce = 0.f;
 
@@ -93,4 +94,14 @@ DynamicVehicle::DynamicVehicle(btDynamicsWorld *dynamicsWorld) {
 		wheel.m_frictionSlip = wheelFriction;
 		wheel.m_rollInfluence = rollInfluence;
 	}
+}
+
+btRigidBody *DynamicVehicle::getBody() {
+	return m_rigid_body;
+}
+
+void DynamicVehicle::addToWorld(World* world) {
+	world->getDynamics()->addRigidBody(m_rigid_body);
+	world->getDynamics()->addAction(m_vehicle);
+	world->getRoot()->addChild(getNode());
 }
