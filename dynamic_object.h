@@ -10,12 +10,12 @@ class DynamicObject {
 public:
 	DynamicObject();
 	virtual ~DynamicObject() {}
-	osg::MatrixTransform *getNode();
 
 	void setRotation(float angle, float x, float y, float z);
 	void setPosition(float x, float y, float z);
 
 	virtual btRigidBody *getBody() = 0;
+	virtual osg::MatrixTransform *getNode();
 	virtual void addToWorld(World* world) = 0;
 
 protected:

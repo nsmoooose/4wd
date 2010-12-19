@@ -6,32 +6,17 @@
 
 class DynamicVehicle : public DynamicObject {
 public:
-	DynamicVehicle(btDynamicsWorld* dynamicsWorld);
+	DynamicVehicle();
+
+	DynamicObject *m_body;
+	DynamicObject *m_wheel_front_left;
+	DynamicObject *m_wheel_front_right;
+	DynamicObject *m_wheel_back_left;
+	DynamicObject *m_wheel_back_right;
 
 	virtual btRigidBody *getBody();
+	virtual osg::MatrixTransform *getNode();
 	virtual void addToWorld(World* world);
-
-	btRaycastVehicle *m_vehicle;
-
-	float engineForce;
-	float breakingForce;
-
-	float maxEngineForce;
-	float maxBreakingForce;
-
-	float vehicleSteering;
-	float steeringIncrement;
-	float steeringClamp;
-	float wheelRadius;
-	float wheelWidth;
-	float wheelFriction;
-	float suspensionStiffness;
-	float suspensionDamping;
-	float suspensionCompression;
-	float rollInfluence;
-
-private:
-	btRigidBody *m_rigid_body;
 };
 
 #endif

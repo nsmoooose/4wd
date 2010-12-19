@@ -173,7 +173,7 @@ void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsW
 	model->setPosition(0, 0, 80);
 	world.addDynamicObject("model", model);
 
-	DynamicVehicle* vehicle = new DynamicVehicle(world.getDynamics());
+	DynamicVehicle* vehicle = new DynamicVehicle();
 	vehicle->setPosition(0, 0, 20);
 	world.addDynamicObject("vehicle", vehicle);
 }
