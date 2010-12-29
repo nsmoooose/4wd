@@ -8,15 +8,21 @@ class DynamicVehicle : public DynamicObject {
 public:
 	DynamicVehicle();
 
+	virtual btRigidBody *getBody();
+	virtual osg::MatrixTransform *getNode();
+	virtual void addToWorld(World* world);
+
+private:
 	DynamicObject *m_body;
 	DynamicObject *m_wheel_front_left;
 	DynamicObject *m_wheel_front_right;
 	DynamicObject *m_wheel_back_left;
 	DynamicObject *m_wheel_back_right;
 
-	virtual btRigidBody *getBody();
-	virtual osg::MatrixTransform *getNode();
-	virtual void addToWorld(World* world);
+	btHinge2Constraint *m_wheel_front_left_c;
+	btHinge2Constraint *m_wheel_front_right_c;
+	btHinge2Constraint *m_wheel_back_left_c;
+	btHinge2Constraint *m_wheel_back_right_c;
 };
 
 #endif

@@ -14,12 +14,12 @@
 #include <iostream>
 #include <string>
 
-#include "dynamic_box.h"
-#include "dynamic_cylinder.h"
-#include "dynamic_model.h"
-#include "dynamic_sphere.h"
-#include "dynamic_vehicle.h"
-#include "world.h"
+#include "lib/dynamic_box.h"
+#include "lib/dynamic_cylinder.h"
+#include "lib/dynamic_model.h"
+#include "lib/dynamic_sphere.h"
+#include "lib/dynamic_vehicle.h"
+#include "lib/world.h"
 
 class VehicleKeyboardHandler : public osgGA::GUIEventHandler {
 public:
@@ -169,12 +169,14 @@ void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsW
 		"ground",
 		new DynamicModel("4wd.osga/models/ground.ive", btScalar(0)));
 
+	/*
 	DynamicModel* model = new DynamicModel("4wd.osga/models/hmmwv.ive", btScalar(30), true);
 	model->setPosition(0, 0, 80);
 	world.addDynamicObject("model", model);
+	*/
 
 	DynamicVehicle* vehicle = new DynamicVehicle();
-	vehicle->setPosition(0, 0, 20);
+	vehicle->setPosition(0, 0, 80);
 	world.addDynamicObject("vehicle", vehicle);
 }
 
