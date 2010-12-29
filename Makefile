@@ -1,9 +1,13 @@
 CXXFLAGS = -g -Os -Wall -pedantic -Werror
 LIBS = -Llib -l4wd -lstdc++ -lBulletDynamics -lBulletCollision -losgViewer -losgShadow -lm -lLinearMath -losgGA -losgDB -losg -lOpenThreads
 
-all: 4wd 4wd.osga
+all: 4wd demo1 4wd.osga
 
 4wd: 4wd.o
+	$(MAKE) -C lib
+	$(CC) $(CXXFLAGS) -o $@ $^ $(LIBS)
+
+demo1: demo1.o
 	$(MAKE) -C lib
 	$(CC) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
