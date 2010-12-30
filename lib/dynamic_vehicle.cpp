@@ -11,8 +11,8 @@
 
 DynamicVehicle::DynamicVehicle() {
 	// m_body = new DynamicModel("4wd.osga/models/hmmwv.ive", btScalar(800), true);
-	// m_body = new DynamicBox(osg::Vec3(0.4f, 0.4f, 0.4f), 800);
-	m_body = new DynamicSphere(2.0, 300);
+	m_body = new DynamicBox(osg::Vec3(0.4f, 0.4f, 0.8f), 800);
+	// m_body = new DynamicSphere(2.0, 300);
 	m_wheel_front_left = new DynamicBox(osg::Vec3(0.15, 0.55, 0.55), 5);
 	m_wheel_front_left->setPosition(-1, 2, 0);
 	// m_wheel_front_left = new DynamicCylinder(0.5, 0.30, 9.0);

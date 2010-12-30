@@ -60,12 +60,12 @@ void configureDisplay(osgViewer::CompositeViewer& viewer, osg::Group *scene) {
 }
 
 void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsWorld) {
-	world.addDynamicObject(
-		"ground",
-		new DynamicBox(osg::Vec3(200.0, 200.0, 1.0), btScalar(0)));
+	DynamicObject* ground = new DynamicBox(osg::Vec3(10.0, 10.0, 0.3), btScalar(0));
+	ground->setPosition(0, 0, -3);
+	world.addDynamicObject("ground", ground);
 
 	DynamicVehicle* vehicle = new DynamicVehicle();
-	vehicle->setPosition(0, 0, 80);
+	// vehicle->setPosition(0, 0, 20);
 	world.addDynamicObject("vehicle", vehicle);
 }
 
