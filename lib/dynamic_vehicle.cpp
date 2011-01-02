@@ -20,19 +20,6 @@ DynamicVehicle::DynamicVehicle() {
 	 * 3 == back right
 	 */
 
-	btVector3 anchors[4] = {
-		btVector3(-1.f, 2.f, 0.f),
-		btVector3(1.f, 2.f, 0.f),
-		btVector3(-1.f, -2.f, 0.f),
-		btVector3(1.f, -2.f, 0.f)
-	};
-	btVector3 positions[4] = {
-		btVector3(-1.f, 2.f, 0.f),
-		btVector3(1.f, 2.f, 0.f),
-		btVector3(-1.f, -2.f, 0.f),
-		btVector3(1.f, -2.f, 0.f)
-	};
-
 	/*
 	  DOF index used in enableSpring() and setStiffness() means:
 	  0 : translation X
@@ -53,6 +40,13 @@ DynamicVehicle::DynamicVehicle() {
 	  Z == Use spring to damp.
 	*/
 
+	btVector3 positions[4] = {
+		btVector3(-1.f, 2.f, -2.f),
+		btVector3(1.f, 2.f, -2.f),
+		btVector3(-1.f, -2.f, -2.f),
+		btVector3(1.f, -2.f, -2.f)
+	};
+
 	for(int i=0;i<4;++i) {
 		DynamicObject* wheel = new DynamicCylinder(0.5, 0.30, 9.0);
 		wheel->setRotation(3.14/2, 0.0, 1.0, 0.0);
@@ -61,10 +55,16 @@ DynamicVehicle::DynamicVehicle() {
 		btVector3 parentAxis(0.f, 0.f, 1.f);
 		btVector3 childAxis(1.f, 0.f, 0.f);
 		btHinge2Constraint* constraint = new btHinge2Constraint(
-			*m_body->getBody(), *wheel->getBody(), anchors[i], parentAxis, childAxis);
-		constraint->setUpperLimit(0.f);
-		constraint->setLowerLimit(0.f);
-		constraint->setStiffness(2, 10000);
+			*m_body->getBody(), *wheel->getBody(), positions[i], parentAxis, childAxis);
+		if(i > 1) {
+			constraint->setUpperLimit(0.f);
+			constraint->setLowerLimit(0.f);
+		}
+		else {
+			constraint->setUpperLimit(0.f);
+			constraint->setLowerLimit(1.f);
+		}
+		constraint->setStiffness(2, 2000);
 		constraint->setDamping(2, 2000);
 
 		m_wheels[i] = wheel;
