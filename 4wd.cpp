@@ -22,7 +22,7 @@
 #include "lib/vehicle_keyboard_handler.h"
 #include "lib/world.h"
 
-void configureDisplay(osgViewer::CompositeViewer& viewer, osg::Group *scene, DynamicObject* object) {
+void configureDisplay(World& world, osgViewer::CompositeViewer& viewer, osg::Group *scene, DynamicObject* object) {
 	osg::GraphicsContext::WindowingSystemInterface* wsi = osg::GraphicsContext::getWindowingSystemInterface();
 	if (!wsi) {
 		osg::notify(osg::NOTICE) << "Error, no WindowSystemInterface available, cannot create windows." << std::endl;
@@ -62,7 +62,7 @@ void configureDisplay(osgViewer::CompositeViewer& viewer, osg::Group *scene, Dyn
 		view->addEventHandler(new osgViewer::StatsHandler);
 		view->addEventHandler(new osgViewer::HelpHandler);
 		view->addEventHandler(new osgViewer::WindowSizeHandler);
-		view->addEventHandler(new VehicleKeyboardHandler());
+		view->addEventHandler(new VehicleKeyboardHandler(&world));
 		osg::ref_ptr<osgGA::StateSetManipulator> statesetManipulator = new osgGA::StateSetManipulator;
 		statesetManipulator->setStateSet(view->getCamera()->getOrCreateStateSet());
 		view->addEventHandler( statesetManipulator.get() );
@@ -176,7 +176,7 @@ int main(int argc, char *argv[]) {
 	world.setRoot(shadowedScene.get());
 	createWorld(world, shadowedScene.get(), world.getDynamics());
 
-	configureDisplay(viewer, root.get(), world.getDynamicObject("vehicle"));
+	configureDisplay(world, viewer, root.get(), world.getDynamicObject("vehicle"));
 
     double prevSimTime = viewer.getFrameStamp()->getSimulationTime();
 	double lastEvent = prevSimTime;

@@ -11,76 +11,65 @@
 
 DynamicVehicle::DynamicVehicle() {
 	// m_body = new DynamicModel("4wd.osga/models/hmmwv.ive", btScalar(800), true);
-	m_body = new DynamicBox(osg::Vec3(0.4f, 0.4f, 0.8f), 800);
-	// m_body = new DynamicSphere(2.0, 300);
-	m_wheel_front_left = new DynamicBox(osg::Vec3(0.15, 0.55, 0.55), 5);
-	m_wheel_front_left->setPosition(-1, 2, 0);
-	// m_wheel_front_left = new DynamicCylinder(0.5, 0.30, 9.0);
-	m_wheel_front_right = new DynamicCylinder(0.5, 0.30, 9.0);
-	m_wheel_front_right->setPosition(1, 2, 0);
-	m_wheel_back_left = new DynamicCylinder(0.5, 0.30, 9.0);
-	m_wheel_back_left->setPosition(-1, -2, 0);
-	m_wheel_back_right = new DynamicCylinder(0.5, 0.30, 9.0);
-	m_wheel_back_right->setPosition(1, -2, 0);
+	m_body = new DynamicBox(osg::Vec3(0.8f, 2.2f, 0.1f), 800);
 
-	btVector3 parentAxis(0.f, 0.f, 1.f);
-	btVector3 childAxis(1.f, 0.f, 0.f);
-	btVector3 anchor(0.f, 0.f, 0.f);
-	m_wheel_front_left_c = new btHinge2Constraint(
-		*m_body->getBody(), *m_wheel_front_left->getBody(), anchor, parentAxis, childAxis);
-	m_wheel_front_left_c->setUpperLimit(0.f);
-	m_wheel_front_left_c->setLowerLimit(0.f);
+	/*
+	 * 0 == front left
+	 * 1 == front right
+	 * 2 == back left
+	 * 3 == back right
+	 */
 
-	anchor = btVector3(0.f, 0.f, 0.f);
-	m_wheel_front_right_c = new btHinge2Constraint(
-		*m_body->getBody(), *m_wheel_front_right->getBody(), anchor, parentAxis, childAxis);
-	m_wheel_front_right_c->setUpperLimit(0.f);
-	m_wheel_front_right_c->setLowerLimit(0.f);
+	btVector3 anchors[4] = {
+		btVector3(-1.f, 2.f, 0.f),
+		btVector3(1.f, 2.f, 0.f),
+		btVector3(-1.f, -2.f, 0.f),
+		btVector3(1.f, -2.f, 0.f)
+	};
+	btVector3 positions[4] = {
+		btVector3(-1.f, 2.f, 0.f),
+		btVector3(1.f, 2.f, 0.f),
+		btVector3(-1.f, -2.f, 0.f),
+		btVector3(1.f, -2.f, 0.f)
+	};
 
-	anchor = btVector3(0.f, 0.f, 0.f);
-	m_wheel_back_left_c = new btHinge2Constraint(
-		*m_body->getBody(), *m_wheel_back_left->getBody(), anchor, parentAxis, childAxis);
-	m_wheel_back_left_c->setUpperLimit(0.f);
-	m_wheel_back_left_c->setLowerLimit(0.f);
+	/*
+	  DOF index used in enableSpring() and setStiffness() means:
+	  0 : translation X
+	  1 : translation Y
+	  2 : translation Z
+	  3 : rotation X (3rd Euler rotational around new position of X axis, range [-PI+epsilon, PI-epsilon] )
+	  4 : rotation Y (2nd Euler rotational around new position of Y axis, range [-PI/2+epsilon, PI/2-epsilon] )
+	  5 : rotation Z (1st Euler rotational around Z axis, range [-PI+epsilon, PI-epsilon] )
 
-	anchor = btVector3(0.f, 0.f, 0.f);
-	m_wheel_back_right_c = new btHinge2Constraint(
-		*m_body->getBody(), *m_wheel_back_right->getBody(), anchor, parentAxis, childAxis);
-	m_wheel_back_right_c->setUpperLimit(0.f);
-	m_wheel_back_right_c->setLowerLimit(0.f);
+	  Rotation
+	  X == wheel is rotating with the speed of the vehicle.
+	  Y == locked
+	  Z == turn left or right. Should have a limitation here.
 
+	  Translation
+	  X == locked
+	  Y == locked
+	  Z == Use spring to damp.
+	*/
 
-#if 0
+	for(int i=0;i<4;++i) {
+		DynamicObject* wheel = new DynamicCylinder(0.5, 0.30, 9.0);
+		wheel->setRotation(3.14/2, 0.0, 1.0, 0.0);
+		wheel->setPosition(positions[i][0], positions[i][1], positions[i][2]);
 
-/// DOF index used in enableSpring() and setStiffness() means:
-/// 0 : translation X
-/// 1 : translation Y
-/// 2 : translation Z
-/// 3 : rotation X (3rd Euler rotational around new position of X axis, range [-PI+epsilon, PI-epsilon] )
-/// 4 : rotation Y (2nd Euler rotational around new position of Y axis, range [-PI/2+epsilon, PI/2-epsilon] )
-/// 5 : rotation Z (1st Euler rotational around Z axis, range [-PI+epsilon, PI-epsilon] )
-/*
-  Rotation
-	X == wheel is rotating with the speed of the vehicle.
-	Y == locked
-	Z == turn left or right. Should have a limitation here.
+		btVector3 parentAxis(0.f, 0.f, 1.f);
+		btVector3 childAxis(1.f, 0.f, 0.f);
+		btHinge2Constraint* constraint = new btHinge2Constraint(
+			*m_body->getBody(), *wheel->getBody(), anchors[i], parentAxis, childAxis);
+		constraint->setUpperLimit(0.f);
+		constraint->setLowerLimit(0.f);
+		constraint->setStiffness(2, 10000);
+		constraint->setDamping(2, 2000);
 
-  Translation
-    X == locked
-    Y == locked
-    Z == Use spring to damp.
-*/
-
-    btHinge2Constraint(btRigidBody& rbA, btRigidBody& rbB, btVector3& anchor,
-					   btVector3& axis1, btVector3& axis2);
-	void setUpperLimit(btScalar ang1max) {
-		setAngularUpperLimit(btVector3(-1.f, 0.f, ang1max));
+		m_wheels[i] = wheel;
+		m_wheels_c[i] = constraint;
 	}
-
-	void setLowerLimit(btScalar ang1min) {
-		setAngularLowerLimit(btVector3( 1.f, 0.f, ang1min));
-	}
-#endif
 }
 
 btRigidBody *DynamicVehicle::getBody() {
@@ -97,18 +86,19 @@ void DynamicVehicle::addToWorld(World* world) {
 	dynamics->addRigidBody(m_body->getBody());
 	world->getRoot()->addChild(m_body->getNode());
 
-	dynamics->addRigidBody(m_wheel_front_left->getBody());
-	world->getRoot()->addChild(m_wheel_front_left->getNode());
-	dynamics->addRigidBody(m_wheel_front_right->getBody());
-	world->getRoot()->addChild(m_wheel_front_right->getNode());
+	for(int i=0;i<4;++i) {
+		dynamics->addRigidBody(m_wheels[i]->getBody());
+		world->getRoot()->addChild(m_wheels[i]->getNode());
+		world->getDynamics()->addConstraint(m_wheels_c[i], true);
+	}
+}
 
-	dynamics->addRigidBody(m_wheel_back_left->getBody());
-	world->getRoot()->addChild(m_wheel_back_left->getNode());
-	dynamics->addRigidBody(m_wheel_back_right->getBody());
-	world->getRoot()->addChild(m_wheel_back_right->getNode());
+void DynamicVehicle::addTorque() {
+	m_wheels[0]->getBody()->applyTorque(btVector3(1000, 0, 0));
+	m_wheels[1]->getBody()->applyTorque(btVector3(1000, 0, 0));
+}
 
-	world->getDynamics()->addConstraint(m_wheel_front_left_c, true);
-	world->getDynamics()->addConstraint(m_wheel_front_right_c, true);
-	world->getDynamics()->addConstraint(m_wheel_back_left_c, true);
-	world->getDynamics()->addConstraint(m_wheel_back_right_c, true);
+void DynamicVehicle::removeTorque() {
+	m_wheels[0]->getBody()->applyTorque(btVector3(-1000, 0, 0));
+	m_wheels[1]->getBody()->applyTorque(btVector3(-1000, 0, 0));
 }

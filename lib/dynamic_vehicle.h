@@ -12,17 +12,13 @@ public:
 	virtual osg::MatrixTransform *getNode();
 	virtual void addToWorld(World* world);
 
+	virtual void addTorque();
+	virtual void removeTorque();
+
 private:
 	DynamicObject *m_body;
-	DynamicObject *m_wheel_front_left;
-	DynamicObject *m_wheel_front_right;
-	DynamicObject *m_wheel_back_left;
-	DynamicObject *m_wheel_back_right;
-
-	btHinge2Constraint *m_wheel_front_left_c;
-	btHinge2Constraint *m_wheel_front_right_c;
-	btHinge2Constraint *m_wheel_back_left_c;
-	btHinge2Constraint *m_wheel_back_right_c;
+	DynamicObject* m_wheels[4];
+	btHinge2Constraint* m_wheels_c[4];
 };
 
 #endif
