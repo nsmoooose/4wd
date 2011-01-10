@@ -1,15 +1,16 @@
 CXXFLAGS = -g -Os -Wall -pedantic -Werror
 LIBS = -Llib -l4wd -lstdc++ -lBulletDynamics -lBulletCollision -losgViewer -losgShadow -lm -lLinearMath -losgGA -losgDB -losg -lOpenThreads
 
-all: 4wd demo1 4wd.osga
+all: lib 4wd demo1 4wd.osga
 
-4wd: 4wd.o
-	$(MAKE) -C lib
-	$(CC) $(CXXFLAGS) -o $@ $^ $(LIBS)
+lib:
+	$(MAKE) -C $@
 
-demo1: demo1.o
-	$(MAKE) -C lib
-	$(CC) $(CXXFLAGS) -o $@ $^ $(LIBS)
+4wd: lib/lib4wd.a 4wd.o
+	$(CC) $(CXXFLAGS) -o $@ $(filter %.o, $^) $(LIBS)
+
+demo1: lib/lib4wd.a demo1.o
+	$(CC) $(CXXFLAGS) -o $@ $(filter %.o, $^) $(LIBS)
 
 4wd.osga: $(patsubst %.blend,%.ive,$(wildcard models/*.blend)) \
 	$(wildcard models/*.png)
@@ -17,7 +18,7 @@ demo1: demo1.o
 	osgarchive -a $@ -i $^
 
 clean:
-	$(MAKE) -C lib clean
+	$(MAKE) -C lib $@
 	$(RM) 4wd *.o 4wd.osga models/*.ive models/*.osg models/*.log models/*.blend1
 
 %.osg: %.blend
@@ -31,3 +32,5 @@ install:
 
 ctags:
 	@ctags -e --recurse=yes --exclude=analysis/* --exclude=.doxygen/*
+
+.PHONY: clean all lib
