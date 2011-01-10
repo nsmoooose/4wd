@@ -62,8 +62,8 @@ void configureDisplay(World& world, osgViewer::CompositeViewer& viewer, osg::Gro
 }
 
 void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsWorld) {
-	DynamicObject* ground = new DynamicBox(osg::Vec3(10.0, 10.0, 0.3), btScalar(0));
-	ground->setPosition(0, 0, -3);
+	DynamicObject* ground = new DynamicModel("4wd.osga/models/demo1_ground.ive", btScalar(0));
+	ground->setPosition(0, 0, -2.5);
 	world.addDynamicObject("ground", ground);
 
 	DynamicVehicle* vehicle = new DynamicVehicle();
