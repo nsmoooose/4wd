@@ -2,6 +2,7 @@
 #include <osgGA/StateSetManipulator>
 #include <osgGA/TrackballManipulator>
 #include <osgShadow/ShadowedScene>
+#include <osgShadow/ShadowMap>
 #include <osgViewer/CompositeViewer>
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
@@ -77,6 +78,33 @@ int main(int argc, char *argv[]) {
 
 	osg::ref_ptr<osgShadow::ShadowedScene> shadowedScene = new osgShadow::ShadowedScene;
 	root->addChild(shadowedScene.get());
+
+	const int ReceivesShadowTraversalMask = 0x1;
+	const int CastsShadowTraversalMask = 0x2;
+	shadowedScene->setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
+	shadowedScene->setCastsShadowTraversalMask(CastsShadowTraversalMask);
+	osg::ref_ptr<osgShadow::ShadowMap> sm = new osgShadow::ShadowMap;
+	shadowedScene->setShadowTechnique(sm.get());
+	int mapres = 1024;
+	sm->setTextureSize(osg::Vec2s(mapres,mapres));
+
+
+	osg::Group* lightGroup = new osg::Group;
+	osg::Light* light = new osg::Light;
+    light->setLightNum(0);
+    light->setPosition(osg::Vec4(0, 0, 10, 1.0f));
+    light->setAmbient(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    light->setDiffuse(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    light->setSpotCutoff(90.0f);
+    light->setSpotExponent(0.0f);
+    light->setDirection(osg::Vec3(0.0f, 0.0f, -1.0f));
+	light->setLinearAttenuation(0.1);
+	osg::LightSource* light_source = new osg::LightSource;
+    light_source->setLight(light);
+    light_source->setLocalStateSetModes(osg::StateAttribute::ON);
+    lightGroup->addChild(light_source);
+	shadowedScene->addChild(lightGroup);
+
 
 	World world;
 	world.setRoot(shadowedScene.get());
