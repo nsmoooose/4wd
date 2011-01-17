@@ -1,3 +1,4 @@
+#include <iostream>
 #include <osgGA/NodeTrackerManipulator>
 #include <osgGA/StateSetManipulator>
 #include <osgGA/TrackballManipulator>
@@ -11,6 +12,7 @@
 #include "lib/dynamic_model.h"
 #include "lib/dynamic_sphere.h"
 #include "lib/dynamic_vehicle.h"
+#include "lib/gldebugdrawer.h"
 #include "lib/vehicle_keyboard_handler.h"
 #include "lib/world.h"
 
@@ -79,6 +81,7 @@ int main(int argc, char *argv[]) {
 	osg::ref_ptr<osgShadow::ShadowedScene> shadowedScene = new osgShadow::ShadowedScene;
 	root->addChild(shadowedScene.get());
 
+	/*
 	const int ReceivesShadowTraversalMask = 0x1;
 	const int CastsShadowTraversalMask = 0x2;
 	shadowedScene->setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
@@ -87,7 +90,7 @@ int main(int argc, char *argv[]) {
 	shadowedScene->setShadowTechnique(sm.get());
 	int mapres = 1024;
 	sm->setTextureSize(osg::Vec2s(mapres,mapres));
-
+	*/
 
 	osg::Group* lightGroup = new osg::Group;
 	osg::Light* light = new osg::Light;
@@ -105,19 +108,35 @@ int main(int argc, char *argv[]) {
     lightGroup->addChild(light_source);
 	shadowedScene->addChild(lightGroup);
 
-
 	World world;
 	world.setRoot(shadowedScene.get());
 	createWorld(world, shadowedScene.get(), world.getDynamics());
+
+	btDynamicsWorld *dynamicsWorld = world.getDynamics();
+
+	GLDebugDrawer* debug_drawer = new GLDebugDrawer();
+	debug_drawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
+	dynamicsWorld->setDebugDrawer(debug_drawer);
+	root->addChild(debug_drawer->getSceneGraph());
 
 	configureDisplay(world, viewer, root.get());
 
     double prevSimTime = viewer.getFrameStamp()->getSimulationTime();
     while( !viewer.done() )
     {
+		debug_drawer->BeginDraw();
+
         double currSimTime = viewer.getFrameStamp()->getSimulationTime();
-        world.getDynamics()->stepSimulation( currSimTime - prevSimTime );
+        dynamicsWorld->stepSimulation( currSimTime - prevSimTime );
         prevSimTime = currSimTime;
+
+		DynamicVehicle *vehicle = dynamic_cast<DynamicVehicle*>(world.getDynamicObject("vehicle"));
+		if(vehicle) {
+			std::cout << vehicle->toString() << std::endl;
+		}
+
+		dynamicsWorld->debugDrawWorld();
+		debug_drawer->EndDraw();
         viewer.frame();
 	}
 

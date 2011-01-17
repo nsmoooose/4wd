@@ -1,4 +1,4 @@
-
+#include <sstream>
 #include <osg/Geode>
 #include <osg/ShapeDrawable>
 #include "dynamic_box.h"
@@ -66,6 +66,7 @@ DynamicVehicle::DynamicVehicle() {
 		}
 		constraint->setStiffness(2, 2000);
 		constraint->setDamping(2, 2000);
+		constraint->setEquilibriumPoint();
 
 		m_wheels[i] = wheel;
 		m_wheels_c[i] = constraint;
@@ -91,6 +92,17 @@ void DynamicVehicle::addToWorld(World* world) {
 		world->getRoot()->addChild(m_wheels[i]->getNode());
 		world->getDynamics()->addConstraint(m_wheels_c[i], true);
 	}
+}
+
+std::string DynamicVehicle::toString() {
+	btTransform transform = m_wheels[0]->getBody()->getWorldTransform();
+	btQuaternion quat = transform.getRotation();
+	btScalar angle = quat.getAngle();
+	btVector3 axis = quat.getAxis();
+
+	std::stringstream str;
+	str << "Angle: " << angle << " Axis: (" << axis[0] << ", " << axis[1] << ", " << axis[2] << ")" << std::ends;
+	return str.str();
 }
 
 void DynamicVehicle::addTorque() {

@@ -15,6 +15,8 @@ public:
 	virtual void addTorque();
 	virtual void removeTorque();
 
+	virtual std::string toString();
+
 private:
 	DynamicObject *m_body;
 	DynamicObject* m_wheels[4];

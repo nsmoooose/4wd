@@ -12,6 +12,10 @@ bool VehicleKeyboardHandler::handle(
 		std::cout << "keydown" << std::endl;
 
 		switch(ea.getKey()) {
+		case osgGA::GUIEventAdapter::KEY_Space:
+		{
+		}
+
 		case osgGA::GUIEventAdapter::KEY_Down:
 		{
 			std::cout << "down" << std::endl;

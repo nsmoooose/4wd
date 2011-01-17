@@ -1,5 +1,5 @@
 CXXFLAGS = -g -Os -Wall -pedantic -Werror $(shell pkg-config --cflags bullet)
-LIBS = -Llib -l4wd -lstdc++ -lBulletDynamics -lBulletCollision -losgViewer -losgShadow -lm -lLinearMath -losgGA -losgDB -losg -lOpenThreads
+LIBS = -Llib -l4wd -lstdc++ -lBulletDynamics -lBulletCollision -losgViewer -losgShadow -lm -lLinearMath -losgGA -losgDB -losg -lOpenThreads -losgText
 
 all: lib 4wd demo1 4wd.osga
 
