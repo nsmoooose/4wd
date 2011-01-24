@@ -12,6 +12,7 @@
 DynamicVehicle::DynamicVehicle() {
 	// m_body = new DynamicModel("4wd.osga/models/hmmwv.ive", btScalar(800), true);
 	m_body = new DynamicBox(osg::Vec3(0.8f, 2.2f, 0.1f), 800);
+	m_body->getBody()->setActivationState(DISABLE_DEACTIVATION);
 
 	/*
 	 * 0 == front left
@@ -51,12 +52,14 @@ DynamicVehicle::DynamicVehicle() {
 		DynamicObject* wheel = new DynamicCylinder(0.5, 0.30, 9.0);
 		wheel->setRotation(3.14/2, 0.0, 1.0, 0.0);
 		wheel->setPosition(positions[i][0], positions[i][1], positions[i][2]);
+		wheel->getBody()->setFriction(100.0f);
+		wheel->getBody()->setActivationState(DISABLE_DEACTIVATION);
 
 		btVector3 parentAxis(0.f, 0.f, 1.f);
 		btVector3 childAxis(1.f, 0.f, 0.f);
 		btHinge2Constraint* constraint = new btHinge2Constraint(
 			*m_body->getBody(), *wheel->getBody(), positions[i], parentAxis, childAxis);
-		if(i > 1) {
+		if(i >= 0) {
 			constraint->setUpperLimit(0.f);
 			constraint->setLowerLimit(0.f);
 		}
@@ -106,11 +109,11 @@ std::string DynamicVehicle::toString() {
 }
 
 void DynamicVehicle::addTorque() {
-	m_wheels[0]->getBody()->applyTorque(btVector3(1000, 0, 0));
-	m_wheels[1]->getBody()->applyTorque(btVector3(1000, 0, 0));
+	m_wheels[0]->getBody()->applyTorque(btVector3(-1000, 0, 0));
+	m_wheels[1]->getBody()->applyTorque(btVector3(-1000, 0, 0));
 }
 
 void DynamicVehicle::removeTorque() {
-	m_wheels[0]->getBody()->applyTorque(btVector3(-1000, 0, 0));
-	m_wheels[1]->getBody()->applyTorque(btVector3(-1000, 0, 0));
+	m_wheels[0]->getBody()->applyTorque(btVector3(1000, 0, 0));
+	m_wheels[1]->getBody()->applyTorque(btVector3(1000, 0, 0));
 }
