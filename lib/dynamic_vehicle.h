@@ -14,6 +14,8 @@ public:
 
 	virtual void addTorque();
 	virtual void removeTorque();
+	virtual void turnLeft();
+	virtual void turnRight();
 
 	virtual std::string toString();
 

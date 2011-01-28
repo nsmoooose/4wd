@@ -39,11 +39,27 @@ bool VehicleKeyboardHandler::handle(
 		}
 
 		case osgGA::GUIEventAdapter::KEY_Left:
+		{
 			std::cout << "left" << std::endl;
+			DynamicVehicle *vehicle = dynamic_cast<DynamicVehicle*>(m_world->getDynamicObject("vehicle"));
+			if(vehicle) {
+				std::cout << "turn left" << std::endl;
+				vehicle->turnLeft();
+			}
 			return true;
+		}
+
 		case osgGA::GUIEventAdapter::KEY_Right:
+		{
 			std::cout << "right" << std::endl;
+			DynamicVehicle *vehicle = dynamic_cast<DynamicVehicle*>(m_world->getDynamicObject("vehicle"));
+			if(vehicle) {
+				std::cout << "turn left" << std::endl;
+				vehicle->turnRight();
+			}
 			return true;
+		}
+
 		default:
 			return false;
 		}

@@ -10,9 +10,13 @@
 #include "world.h"
 
 DynamicVehicle::DynamicVehicle() {
+	btCompoundShape* compound = new btCompoundShape();
+
 	// m_body = new DynamicModel("4wd.osga/models/hmmwv.ive", btScalar(800), true);
 	m_body = new DynamicBox(osg::Vec3(0.8f, 2.2f, 0.1f), 800);
 	m_body->getBody()->setActivationState(DISABLE_DEACTIVATION);
+
+
 
 	/*
 	 * 0 == front left
@@ -106,6 +110,19 @@ std::string DynamicVehicle::toString() {
 	std::stringstream str;
 	str << "Angle: " << angle << " Axis: (" << axis[0] << ", " << axis[1] << ", " << axis[2] << ")" << std::ends;
 	return str.str();
+}
+
+void DynamicVehicle::turnLeft() {
+	for(int i=0;i<2;++i) {
+		m_wheels[i]->setRotation(-0.5, 0.0, 1.0, 1.0);
+		m_wheels_c[i]->setEquilibriumPoint();
+	}
+}
+
+void DynamicVehicle::turnRight() {
+	for(int i=0;i<2;++i) {
+		m_wheels[i]->setRotation(0.5, 0.0, 0.0, 1.0);
+	}
 }
 
 void DynamicVehicle::addTorque() {

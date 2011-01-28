@@ -1,6 +1,13 @@
 * TASKS
 ** TODO Jeep Wrangler model in blender
    http://en.wikipedia.org/wiki/Jeep_Wrangler
+** TODO Rework objects into shape objects.
+   The purpose of the DynamicBox, DynamicCylinder etc is to have a
+   shape that nicely fits together with OpenSceneGraph view of everything.
+
+   Really want to remodel the code and call them BoxShape, CylinderShape etc.
+   This makes it possible to nicely put together compound objects etc.
+
 ** DONE Generate a bullet shape from osg model.
 	blender -b dummy.blend -P blender_export.py -- dummy.dxf
 ** DONE Connect camera to the box.
