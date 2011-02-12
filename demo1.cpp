@@ -65,7 +65,7 @@ void configureDisplay(World& world, osgViewer::CompositeViewer& viewer, osg::Gro
 
 void createWorld(World &world, osg::Group *worldNode, btDynamicsWorld *dynamicsWorld) {
 	DynamicObject* ground = new DynamicModel("4wd.osga/models/demo1_ground.ive", btScalar(0));
-	ground->setPosition(0, 0, -2.5);
+	ground->setPosition(0, 0, -3.5);
 	world.addDynamicObject("ground", ground);
 
 	DynamicVehicle* vehicle = new DynamicVehicle();
@@ -115,7 +115,8 @@ int main(int argc, char *argv[]) {
 	btDynamicsWorld *dynamicsWorld = world.getDynamics();
 
 	GLDebugDrawer* debug_drawer = new GLDebugDrawer();
-	debug_drawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
+	// debug_drawer->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE);
+	debug_drawer->setDebugMode(btIDebugDraw::DBG_DrawConstraints|btIDebugDraw::DBG_DrawConstraintLimits|btIDebugDraw::DBG_FastWireframe);
 	dynamicsWorld->setDebugDrawer(debug_drawer);
 	root->addChild(debug_drawer->getSceneGraph());
 
