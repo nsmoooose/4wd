@@ -76,7 +76,7 @@ void DynamicVehicle::createFrontAxle() {
 	btVector3 axle_inertia(0, 0, 0);
 	axle_compound->calculateLocalInertia(axle_compound_mass, axle_inertia);
 	btTransform axle_and_wheel_trans = btTransform::getIdentity();
-	axle_and_wheel_trans.setOrigin(btVector3(0, 2, -2));
+	axle_and_wheel_trans.setOrigin(btVector3(0, 2, -1));
     btRigidBody::btRigidBodyConstructionInfo rb(
 		axle_compound_mass,
 		new btDefaultMotionState(axle_and_wheel_trans),
@@ -88,19 +88,29 @@ void DynamicVehicle::createFrontAxle() {
 
 	btVector3 parentAxis(0.f, 0.f, 1.f);
 	btVector3 childAxis(1.f, 0.f, 0.f);
-	btVector3 left_position(-1, 2, -2);
+	btVector3 left_position(-1, 2, -1);
 	front_axle_spring_left = new btHinge2Constraint(
 		*m_body->getBody(), *front_axle_body, left_position, parentAxis, childAxis);
 	front_axle_spring_left->setUpperLimit(0.f);
 	front_axle_spring_left->setLowerLimit(0.f);
 	front_axle_spring_left->setLimit(4, -1, 1);
+	front_axle_spring_left->enableSpring(2, true);
+	front_axle_spring_left->setStiffness(2, 900);
+	front_axle_spring_left->setDamping(2, 10);
+	front_axle_spring_left->setLimit(2, 0, 0.5);
+	front_axle_spring_left->setEquilibriumPoint(2);
 
-	btVector3 right_position(1, 2, -2);
+	btVector3 right_position(1, 2, -1);
 	front_axle_spring_right = new btHinge2Constraint(
 		*m_body->getBody(), *front_axle_body, right_position, parentAxis, childAxis);
 	front_axle_spring_right->setUpperLimit(0.f);
 	front_axle_spring_right->setLowerLimit(0.f);
 	front_axle_spring_right->setLimit(4, -1, 1);
+	front_axle_spring_right->enableSpring(2, true);
+	front_axle_spring_right->setStiffness(2, 900);
+	front_axle_spring_right->setDamping(2, 10);
+	front_axle_spring_right->setLimit(2, 0, 0.5);
+	front_axle_spring_right->setEquilibriumPoint(2);
 }
 
 void DynamicVehicle::createRearAxle() {
@@ -134,7 +144,7 @@ void DynamicVehicle::createRearAxle() {
 	btVector3 axle_inertia(0, 0, 0);
 	axle_compound->calculateLocalInertia(axle_compound_mass, axle_inertia);
 	btTransform axle_and_wheel_trans = btTransform::getIdentity();
-	axle_and_wheel_trans.setOrigin(btVector3(0, -2, -2));
+	axle_and_wheel_trans.setOrigin(btVector3(0, -2, -1));
     btRigidBody::btRigidBodyConstructionInfo rb(
 		axle_compound_mass,
 		new btDefaultMotionState(axle_and_wheel_trans),
@@ -146,19 +156,29 @@ void DynamicVehicle::createRearAxle() {
 
 	btVector3 parentAxis(0.f, 0.f, 1.f);
 	btVector3 childAxis(1.f, 0.f, 0.f);
-	btVector3 left_position(-1, -2, -2);
+	btVector3 left_position(-1, -2, -1);
 	rear_axle_spring_left = new btHinge2Constraint(
 		*m_body->getBody(), *rear_axle_body, left_position, parentAxis, childAxis);
 	rear_axle_spring_left->setUpperLimit(0.f);
 	rear_axle_spring_left->setLowerLimit(0.f);
 	rear_axle_spring_left->setLimit(4, -1, 1);
+	rear_axle_spring_left->enableSpring(2, true);
+	rear_axle_spring_left->setStiffness(2, 900);
+	rear_axle_spring_left->setDamping(2, 10);
+	rear_axle_spring_left->setLimit(2, 0, 0.5);
+	rear_axle_spring_left->setEquilibriumPoint(2);
 
-	btVector3 right_position(1, -2, -2);
+	btVector3 right_position(1, -2, -1);
 	rear_axle_spring_right = new btHinge2Constraint(
 		*m_body->getBody(), *rear_axle_body, right_position, parentAxis, childAxis);
 	rear_axle_spring_right->setUpperLimit(0.f);
 	rear_axle_spring_right->setLowerLimit(0.f);
 	rear_axle_spring_right->setLimit(4, -1, 1);
+	rear_axle_spring_right->enableSpring(2, true);
+	rear_axle_spring_right->setStiffness(2, 900);
+	rear_axle_spring_right->setDamping(2, 10);
+	rear_axle_spring_right->setLimit(2, 0, 0.5);
+	rear_axle_spring_right->setEquilibriumPoint(2);
 }
 
 btRigidBody *DynamicVehicle::getBody() {
