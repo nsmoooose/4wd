@@ -20,9 +20,18 @@ public:
 	virtual std::string toString();
 
 private:
+	void createFrontAxle();
+	void createRearAxle();
+
 	DynamicObject *m_body;
-	DynamicObject* m_wheels[4];
-	btHinge2Constraint* m_wheels_c[4];
+
+	btHinge2Constraint* front_axle_spring_left;
+	btHinge2Constraint* front_axle_spring_right;
+	btRigidBody* front_axle_body;
+
+	btHinge2Constraint* rear_axle_spring_left;
+	btHinge2Constraint* rear_axle_spring_right;
+	btRigidBody* rear_axle_body;
 };
 
 #endif

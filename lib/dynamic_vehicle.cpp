@@ -10,13 +10,9 @@
 #include "world.h"
 
 DynamicVehicle::DynamicVehicle() {
-	btCompoundShape* compound = new btCompoundShape();
-
 	// m_body = new DynamicModel("4wd.osga/models/hmmwv.ive", btScalar(800), true);
-	m_body = new DynamicBox(osg::Vec3(0.8f, 2.2f, 0.1f), 800);
+	m_body = new DynamicBox(osg::Vec3(0.8f, 2.2f, 0.1f), 80);
 	m_body->getBody()->setActivationState(DISABLE_DEACTIVATION);
-
-
 
 	/*
 	 * 0 == front left
@@ -45,39 +41,124 @@ DynamicVehicle::DynamicVehicle() {
 	  Z == Use spring to damp.
 	*/
 
-	btVector3 positions[4] = {
-		btVector3(-1.f, 2.f, -2.f),
-		btVector3(1.f, 2.f, -2.f),
-		btVector3(-1.f, -2.f, -2.f),
-		btVector3(1.f, -2.f, -2.f)
-	};
+	createRearAxle();
+	createFrontAxle();
+}
 
-	for(int i=0;i<4;++i) {
-		DynamicObject* wheel = new DynamicCylinder(0.5, 0.30, 9.0);
-		wheel->setRotation(3.14/2, 0.0, 1.0, 0.0);
-		wheel->setPosition(positions[i][0], positions[i][1], positions[i][2]);
-		wheel->getBody()->setFriction(100.0f);
-		wheel->getBody()->setActivationState(DISABLE_DEACTIVATION);
+void DynamicVehicle::createFrontAxle() {
+	btScalar wheel_radius = 0.5;
+	btScalar wheel_width = 0.3;
+	btCylinderShape* wheel = new btCylinderShapeZ(btVector3(wheel_radius, wheel_radius, wheel_width/2));
 
-		btVector3 parentAxis(0.f, 0.f, 1.f);
-		btVector3 childAxis(1.f, 0.f, 0.f);
-		btHinge2Constraint* constraint = new btHinge2Constraint(
-			*m_body->getBody(), *wheel->getBody(), positions[i], parentAxis, childAxis);
-		if(i >= 0) {
-			constraint->setUpperLimit(0.f);
-			constraint->setLowerLimit(0.f);
-		}
-		else {
-			constraint->setUpperLimit(0.f);
-			constraint->setLowerLimit(1.f);
-		}
-		constraint->setStiffness(2, 2000);
-		constraint->setDamping(2, 2000);
-		constraint->setEquilibriumPoint();
+	btScalar axle_radius = 0.05;
+	btScalar axle_length = 2.0;
+	btCylinderShape* axle = new btCylinderShapeZ(btVector3(axle_radius, axle_radius, axle_length/2));
 
-		m_wheels[i] = wheel;
-		m_wheels_c[i] = constraint;
-	}
+	btQuaternion axle_quat = btQuaternion::getIdentity();
+	axle_quat.setRotation(btVector3(0, 1, 0), 3.14/2);
+
+	btScalar axle_compound_mass = 100.0;
+	btCompoundShape* axle_compound = new btCompoundShape();
+	btTransform axle_trans = btTransform::getIdentity();
+	axle_trans.setRotation(axle_quat);
+	axle_compound->addChildShape(axle_trans, axle);
+
+	btTransform wheel_l_trans = btTransform::getIdentity();
+	wheel_l_trans.setOrigin(btVector3(-1, 0, 0));
+	wheel_l_trans.setRotation(axle_quat);
+	axle_compound->addChildShape(wheel_l_trans, wheel);
+
+	btTransform wheel_r_trans = btTransform::getIdentity();
+	wheel_r_trans.setOrigin(btVector3(1, 0, 0));
+	wheel_r_trans.setRotation(axle_quat);
+	axle_compound->addChildShape(wheel_r_trans, wheel);
+
+	btVector3 axle_inertia(0, 0, 0);
+	axle_compound->calculateLocalInertia(axle_compound_mass, axle_inertia);
+	btTransform axle_and_wheel_trans = btTransform::getIdentity();
+	axle_and_wheel_trans.setOrigin(btVector3(0, 2, -2));
+    btRigidBody::btRigidBodyConstructionInfo rb(
+		axle_compound_mass,
+		new btDefaultMotionState(axle_and_wheel_trans),
+		axle_compound,
+		axle_inertia);
+	front_axle_body = new btRigidBody(rb);
+	front_axle_body->setFriction(100);
+	front_axle_body->setActivationState(DISABLE_DEACTIVATION);
+
+	btVector3 parentAxis(0.f, 0.f, 1.f);
+	btVector3 childAxis(1.f, 0.f, 0.f);
+	btVector3 left_position(-1, 2, -2);
+	front_axle_spring_left = new btHinge2Constraint(
+		*m_body->getBody(), *front_axle_body, left_position, parentAxis, childAxis);
+	front_axle_spring_left->setUpperLimit(0.f);
+	front_axle_spring_left->setLowerLimit(0.f);
+	front_axle_spring_left->setLimit(4, -1, 1);
+
+	btVector3 right_position(1, 2, -2);
+	front_axle_spring_right = new btHinge2Constraint(
+		*m_body->getBody(), *front_axle_body, right_position, parentAxis, childAxis);
+	front_axle_spring_right->setUpperLimit(0.f);
+	front_axle_spring_right->setLowerLimit(0.f);
+	front_axle_spring_right->setLimit(4, -1, 1);
+}
+
+void DynamicVehicle::createRearAxle() {
+	btScalar wheel_radius = 0.5;
+	btScalar wheel_width = 0.3;
+	btCylinderShape* wheel = new btCylinderShapeZ(btVector3(wheel_radius, wheel_radius, wheel_width/2));
+
+	btScalar axle_radius = 0.05;
+	btScalar axle_length = 2.0;
+	btCylinderShape* axle = new btCylinderShapeZ(btVector3(axle_radius, axle_radius, axle_length/2));
+
+	btQuaternion axle_quat = btQuaternion::getIdentity();
+	axle_quat.setRotation(btVector3(0, 1, 0), 3.14/2);
+
+	btScalar axle_compound_mass = 100.0;
+	btCompoundShape* axle_compound = new btCompoundShape();
+	btTransform axle_trans = btTransform::getIdentity();
+	axle_trans.setRotation(axle_quat);
+	axle_compound->addChildShape(axle_trans, axle);
+
+	btTransform wheel_l_trans = btTransform::getIdentity();
+	wheel_l_trans.setOrigin(btVector3(-1, 0, 0));
+	wheel_l_trans.setRotation(axle_quat);
+	axle_compound->addChildShape(wheel_l_trans, wheel);
+
+	btTransform wheel_r_trans = btTransform::getIdentity();
+	wheel_r_trans.setOrigin(btVector3(1, 0, 0));
+	wheel_r_trans.setRotation(axle_quat);
+	axle_compound->addChildShape(wheel_r_trans, wheel);
+
+	btVector3 axle_inertia(0, 0, 0);
+	axle_compound->calculateLocalInertia(axle_compound_mass, axle_inertia);
+	btTransform axle_and_wheel_trans = btTransform::getIdentity();
+	axle_and_wheel_trans.setOrigin(btVector3(0, -2, -2));
+    btRigidBody::btRigidBodyConstructionInfo rb(
+		axle_compound_mass,
+		new btDefaultMotionState(axle_and_wheel_trans),
+		axle_compound,
+		axle_inertia);
+	rear_axle_body = new btRigidBody(rb);
+	rear_axle_body->setFriction(100);
+	rear_axle_body->setActivationState(DISABLE_DEACTIVATION);
+
+	btVector3 parentAxis(0.f, 0.f, 1.f);
+	btVector3 childAxis(1.f, 0.f, 0.f);
+	btVector3 left_position(-1, -2, -2);
+	rear_axle_spring_left = new btHinge2Constraint(
+		*m_body->getBody(), *rear_axle_body, left_position, parentAxis, childAxis);
+	rear_axle_spring_left->setUpperLimit(0.f);
+	rear_axle_spring_left->setLowerLimit(0.f);
+	rear_axle_spring_left->setLimit(4, -1, 1);
+
+	btVector3 right_position(1, -2, -2);
+	rear_axle_spring_right = new btHinge2Constraint(
+		*m_body->getBody(), *rear_axle_body, right_position, parentAxis, childAxis);
+	rear_axle_spring_right->setUpperLimit(0.f);
+	rear_axle_spring_right->setLowerLimit(0.f);
+	rear_axle_spring_right->setLimit(4, -1, 1);
 }
 
 btRigidBody *DynamicVehicle::getBody() {
@@ -92,45 +173,47 @@ void DynamicVehicle::addToWorld(World* world) {
 	btDynamicsWorld* dynamics = world->getDynamics();
 
 	dynamics->addRigidBody(m_body->getBody());
+	dynamics->addRigidBody(rear_axle_body);
+	dynamics->addRigidBody(front_axle_body);
+	dynamics->addConstraint(front_axle_spring_left, true);
+	dynamics->addConstraint(front_axle_spring_right, true);
+	dynamics->addConstraint(rear_axle_spring_left, true);
+	dynamics->addConstraint(rear_axle_spring_right, true);
 	world->getRoot()->addChild(m_body->getNode());
-
-	for(int i=0;i<4;++i) {
-		dynamics->addRigidBody(m_wheels[i]->getBody());
-		world->getRoot()->addChild(m_wheels[i]->getNode());
-		world->getDynamics()->addConstraint(m_wheels_c[i], true);
-	}
 }
 
 std::string DynamicVehicle::toString() {
-	btTransform transform = m_wheels[0]->getBody()->getWorldTransform();
-	btQuaternion quat = transform.getRotation();
-	btScalar angle = quat.getAngle();
-	btVector3 axis = quat.getAxis();
+	// btTransform transform = m_wheels[0]->getBody()->getWorldTransform();
+	// btQuaternion quat = transform.getRotation();
+	// btScalar angle = quat.getAngle();
+	// btVector3 axis = quat.getAxis();
 
 	std::stringstream str;
-	str << "Angle: " << angle << " Axis: (" << axis[0] << ", " << axis[1] << ", " << axis[2] << ")" << std::ends;
+//	str << "Angle: " << angle << " Axis: (" << axis[0] << ", " << axis[1] << ", " << axis[2] << ")" << std::ends;
 	return str.str();
 }
 
 void DynamicVehicle::turnLeft() {
-	for(int i=0;i<2;++i) {
-		m_wheels[i]->setRotation(-0.5, 0.0, 1.0, 1.0);
-		m_wheels_c[i]->setEquilibriumPoint();
-	}
+	// for(int i=0;i<2;++i) {
+	// 	m_wheels[i]->setRotation(-0.5, 0.0, 1.0, 1.0);
+	// 	m_wheels_c[i]->setEquilibriumPoint();
+	// }
 }
 
 void DynamicVehicle::turnRight() {
-	for(int i=0;i<2;++i) {
-		m_wheels[i]->setRotation(0.5, 0.0, 0.0, 1.0);
-	}
+	// for(int i=0;i<2;++i) {
+	// 	m_wheels[i]->setRotation(0.5, 0.0, 0.0, 1.0);
+	// }
 }
 
 void DynamicVehicle::addTorque() {
-	m_wheels[0]->getBody()->applyTorque(btVector3(-1000, 0, 0));
-	m_wheels[1]->getBody()->applyTorque(btVector3(-1000, 0, 0));
+	rear_axle_body->applyTorque(btVector3(-1000, 0, 0));
+	// m_wheels[0]->getBody()->applyTorque(btVector3(-1000, 0, 0));
+	// m_wheels[1]->getBody()->applyTorque(btVector3(-1000, 0, 0));
 }
 
 void DynamicVehicle::removeTorque() {
-	m_wheels[0]->getBody()->applyTorque(btVector3(1000, 0, 0));
-	m_wheels[1]->getBody()->applyTorque(btVector3(1000, 0, 0));
+	rear_axle_body->applyTorque(btVector3(1000, 0, 0));
+	// m_wheels[0]->getBody()->applyTorque(btVector3(1000, 0, 0));
+	// m_wheels[1]->getBody()->applyTorque(btVector3(1000, 0, 0));
 }

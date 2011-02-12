@@ -14,6 +14,7 @@ bool VehicleKeyboardHandler::handle(
 		switch(ea.getKey()) {
 		case osgGA::GUIEventAdapter::KEY_Space:
 		{
+			m_world->setPause(!m_world->getPause());
 		}
 
 		case osgGA::GUIEventAdapter::KEY_Down:

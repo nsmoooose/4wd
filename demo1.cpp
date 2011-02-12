@@ -121,12 +121,12 @@ int main(int argc, char *argv[]) {
 
 	configureDisplay(world, viewer, root.get());
 
-    double prevSimTime = viewer.getFrameStamp()->getSimulationTime();
+    double prevSimTime = world.getSimulationTime();
     while( !viewer.done() )
     {
 		debug_drawer->BeginDraw();
 
-        double currSimTime = viewer.getFrameStamp()->getSimulationTime();
+        double currSimTime = world.getSimulationTime();
         dynamicsWorld->stepSimulation( currSimTime - prevSimTime );
         prevSimTime = currSimTime;
 
@@ -137,7 +137,7 @@ int main(int argc, char *argv[]) {
 
 		dynamicsWorld->debugDrawWorld();
 		debug_drawer->EndDraw();
-        viewer.frame();
+        viewer.frame(currSimTime);
 	}
 
 	return 0;

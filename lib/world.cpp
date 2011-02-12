@@ -1,7 +1,7 @@
 #include "dynamic_vehicle.h"
 #include "world.h"
 
-World::World() : m_root(new osg::Group) {
+World::World() : m_pause(false), m_simulation_time(0.0f), m_root(new osg::Group) {
 	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
     btCollisionDispatcher *dispatcher = new btCollisionDispatcher(collisionConfiguration);
     btConstraintSolver *solver = new btSequentialImpulseConstraintSolver();
@@ -10,6 +10,27 @@ World::World() : m_root(new osg::Group) {
     btBroadphaseInterface *inter = new btDbvtBroadphase();
     m_dynamics = new btDiscreteDynamicsWorld(dispatcher, inter, solver, collisionConfiguration);
     m_dynamics->setGravity(btVector3(0, 0, -10));
+
+	m_start_tick = m_timer.tick();
+}
+
+double World::getSimulationTime() {
+	if(m_pause) {
+		return m_simulation_time;
+	}
+	else {
+		return m_timer.time_s();
+	}
+}
+
+void World::setPause(bool value) {
+	m_pause = value;
+	if(m_pause) {
+		m_start_tick = m_timer.tick();
+	}
+	else {
+		m_timer.setStartTick(m_timer.getStartTick()+(m_timer.tick()-m_start_tick));
+	}
 }
 
 osg::Group *World::getRoot() {
