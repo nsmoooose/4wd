@@ -29,8 +29,6 @@
 #include <iostream>
 #include <stdio.h>
 
-#include "osgbBullet/Utils.h"
-
 GLDebugDrawer::GLDebugDrawer()
   : _enabled( true ),
     _active( false ),
