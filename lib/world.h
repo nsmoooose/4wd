@@ -5,7 +5,9 @@
 #include <string>
 #include <osg/Group>
 #include <osg/Timer>
+#include <osgViewer/Viewer>
 #include "dynamic_object.h"
+#include "gldebugdrawer.h"
 
 class World {
 public:
@@ -21,6 +23,8 @@ public:
 	double getSimulationTime();
 	void setPause(bool value);
 	bool getPause() { return m_pause; }
+
+	void render(osgViewer::ViewerBase* viewer, GLDebugDrawer* debug_drawer);
 
 private:
 	bool m_pause;

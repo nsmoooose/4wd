@@ -81,7 +81,6 @@ int main(int argc, char *argv[]) {
 	osg::ref_ptr<osgShadow::ShadowedScene> shadowedScene = new osgShadow::ShadowedScene;
 	root->addChild(shadowedScene.get());
 
-	/*
 	const int ReceivesShadowTraversalMask = 0x1;
 	const int CastsShadowTraversalMask = 0x2;
 	shadowedScene->setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
@@ -90,7 +89,6 @@ int main(int argc, char *argv[]) {
 	shadowedScene->setShadowTechnique(sm.get());
 	int mapres = 1024;
 	sm->setTextureSize(osg::Vec2s(mapres,mapres));
-	*/
 
 	osg::Group* lightGroup = new osg::Group;
 	osg::Light* light = new osg::Light;
@@ -122,26 +120,7 @@ int main(int argc, char *argv[]) {
 
 	configureDisplay(world, viewer, root.get());
 
-    double prevSimTime = world.getSimulationTime();
-    while( !viewer.done() )
-    {
-		debug_drawer->BeginDraw();
-
-        double currSimTime = world.getSimulationTime();
-		if(!world.getPause()) {
-			dynamicsWorld->stepSimulation( currSimTime - prevSimTime );
-		}
-		prevSimTime = currSimTime;
-
-		DynamicVehicle *vehicle = dynamic_cast<DynamicVehicle*>(world.getDynamicObject("vehicle"));
-		if(vehicle) {
-			std::cout << vehicle->toString() << std::endl;
-		}
-
-		dynamicsWorld->debugDrawWorld();
-		debug_drawer->EndDraw();
-        viewer.frame(currSimTime);
-	}
+	world.render(&viewer, debug_drawer);
 
 	return 0;
 }

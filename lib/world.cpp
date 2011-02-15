@@ -1,3 +1,4 @@
+#include <iostream>
 #include "dynamic_vehicle.h"
 #include "world.h"
 
@@ -48,4 +49,27 @@ void World::addDynamicObject(const std::string &id, DynamicObject *object) {
 
 DynamicObject* World::getDynamicObject(const std::string &id) {
 	return m_dynamic_objects[id];
+}
+
+void World::render(osgViewer::ViewerBase* viewer, GLDebugDrawer* debug_drawer) {
+    double prevSimTime = getSimulationTime();
+    while( !viewer->done() )
+    {
+		debug_drawer->BeginDraw();
+
+        double currSimTime = getSimulationTime();
+		if(!getPause()) {
+			m_dynamics->stepSimulation( currSimTime - prevSimTime );
+		}
+		prevSimTime = currSimTime;
+
+		DynamicVehicle *vehicle = dynamic_cast<DynamicVehicle*>(getDynamicObject("vehicle"));
+		if(vehicle) {
+			std::cout << vehicle->toString() << std::endl;
+		}
+
+		m_dynamics->debugDrawWorld();
+		debug_drawer->EndDraw();
+        viewer->frame(currSimTime);
+	}
 }

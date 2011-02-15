@@ -227,13 +227,13 @@ void DynamicVehicle::turnRight() {
 }
 
 void DynamicVehicle::addTorque() {
-	rear_axle_body->applyTorque(btVector3(-1000, 0, 0));
+	rear_axle_body->applyTorque(btVector3(-20000, 0, 0));
 	// m_wheels[0]->getBody()->applyTorque(btVector3(-1000, 0, 0));
 	// m_wheels[1]->getBody()->applyTorque(btVector3(-1000, 0, 0));
 }
 
 void DynamicVehicle::removeTorque() {
-	rear_axle_body->applyTorque(btVector3(1000, 0, 0));
+	rear_axle_body->applyTorque(btVector3(20000, 0, 0));
 	// m_wheels[0]->getBody()->applyTorque(btVector3(1000, 0, 0));
 	// m_wheels[1]->getBody()->applyTorque(btVector3(1000, 0, 0));
 }
