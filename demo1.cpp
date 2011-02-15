@@ -128,8 +128,10 @@ int main(int argc, char *argv[]) {
 		debug_drawer->BeginDraw();
 
         double currSimTime = world.getSimulationTime();
-        dynamicsWorld->stepSimulation( currSimTime - prevSimTime );
-        prevSimTime = currSimTime;
+		if(!world.getPause()) {
+			dynamicsWorld->stepSimulation( currSimTime - prevSimTime );
+		}
+		prevSimTime = currSimTime;
 
 		DynamicVehicle *vehicle = dynamic_cast<DynamicVehicle*>(world.getDynamicObject("vehicle"));
 		if(vehicle) {
