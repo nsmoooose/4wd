@@ -81,6 +81,7 @@ int main(int argc, char *argv[]) {
 	osg::ref_ptr<osgShadow::ShadowedScene> shadowedScene = new osgShadow::ShadowedScene;
 	root->addChild(shadowedScene.get());
 
+	/*
 	const int ReceivesShadowTraversalMask = 0x1;
 	const int CastsShadowTraversalMask = 0x2;
 	shadowedScene->setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
@@ -89,6 +90,7 @@ int main(int argc, char *argv[]) {
 	shadowedScene->setShadowTechnique(sm.get());
 	int mapres = 1024;
 	sm->setTextureSize(osg::Vec2s(mapres,mapres));
+	*/
 
 	osg::Group* lightGroup = new osg::Group;
 	osg::Light* light = new osg::Light;

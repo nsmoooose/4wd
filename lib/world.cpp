@@ -59,7 +59,7 @@ void World::render(osgViewer::ViewerBase* viewer, GLDebugDrawer* debug_drawer) {
 
         double currSimTime = getSimulationTime();
 		if(!getPause()) {
-			m_dynamics->stepSimulation( currSimTime - prevSimTime );
+			m_dynamics->stepSimulation(currSimTime - prevSimTime, 7);
 		}
 		prevSimTime = currSimTime;
 
