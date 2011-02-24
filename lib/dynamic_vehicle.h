@@ -32,6 +32,8 @@ private:
 	btHinge2Constraint* rear_axle_spring_left;
 	btHinge2Constraint* rear_axle_spring_right;
 	btRigidBody* rear_axle_body;
+
+	osg::ref_ptr<osg::MatrixTransform> rear_axle_geometry;
 };
 
 #endif

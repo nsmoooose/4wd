@@ -7,6 +7,7 @@
 #include "dynamic_sphere.h"
 #include "dynamic_vehicle.h"
 #include "motion_state.h"
+#include "shapes.h"
 #include "world.h"
 
 DynamicVehicle::DynamicVehicle() {
@@ -143,11 +144,32 @@ void DynamicVehicle::createRearAxle() {
 
 	btVector3 axle_inertia(0, 0, 0);
 	axle_compound->calculateLocalInertia(axle_compound_mass, axle_inertia);
-	btTransform axle_and_wheel_trans = btTransform::getIdentity();
-	axle_and_wheel_trans.setOrigin(btVector3(0, -2, -1));
+
+	rear_axle_geometry = new osg::MatrixTransform();
+	rear_axle_geometry->setMatrix(osg::Matrix::translate(osg::Vec3(0, -2, -1)));
+
+	osg::ref_ptr<osg::MatrixTransform> rear_axle_axle_geometry = new osg::MatrixTransform();
+	rear_axle_axle_geometry->setMatrix(osg::Matrix::rotate(3.14/2, osg::Vec3(0.0, 1.0, 0.0)));
+	rear_axle_axle_geometry->addChild(create_cylinder(axle_radius, axle_length));
+	rear_axle_geometry->addChild(rear_axle_axle_geometry.get());
+
+	osg::ref_ptr<osg::MatrixTransform> left_wheel_geometry = new osg::MatrixTransform();
+	left_wheel_geometry->setMatrix(
+		osg::Matrix::rotate(3.14/2, osg::Vec3(0.0, 1.0, 0.0)) *
+		osg::Matrix::translate(osg::Vec3(-1, 0, 0)));
+	left_wheel_geometry->addChild(create_cylinder(wheel_radius, wheel_width));
+	rear_axle_geometry->addChild(left_wheel_geometry.get());
+
+	osg::ref_ptr<osg::MatrixTransform> right_wheel_geometry = new osg::MatrixTransform();
+	right_wheel_geometry->setMatrix(
+		osg::Matrix::rotate(3.14/2, osg::Vec3(0.0, 1.0, 0.0)) *
+		osg::Matrix::translate(osg::Vec3(1, 0, 0)));
+	right_wheel_geometry->addChild(create_cylinder(wheel_radius, wheel_width));
+	rear_axle_geometry->addChild(right_wheel_geometry.get());
+
     btRigidBody::btRigidBodyConstructionInfo rb(
 		axle_compound_mass,
-		new btDefaultMotionState(axle_and_wheel_trans),
+		new MotionState(rear_axle_geometry.get()),
 		axle_compound,
 		axle_inertia);
 	rear_axle_body = new btRigidBody(rb);
@@ -200,6 +222,7 @@ void DynamicVehicle::addToWorld(World* world) {
 	dynamics->addConstraint(rear_axle_spring_left, true);
 	dynamics->addConstraint(rear_axle_spring_right, true);
 	world->getRoot()->addChild(m_body->getNode());
+	world->getRoot()->addChild(rear_axle_geometry.get());
 }
 
 std::string DynamicVehicle::toString() {
