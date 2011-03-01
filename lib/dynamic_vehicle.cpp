@@ -14,6 +14,7 @@ DynamicVehicle::DynamicVehicle() {
 	// m_body = new DynamicModel("4wd.osga/models/hmmwv.ive", btScalar(800), true);
 	m_body = new DynamicBox(osg::Vec3(0.8f, 2.2f, 0.1f), 80);
 	m_body->getBody()->setActivationState(DISABLE_DEACTIVATION);
+	m_body->getBody()->setDamping(0.95, 0.95);
 
 	/*
 	 * 0 == front left
@@ -174,6 +175,7 @@ void DynamicVehicle::createRearAxle() {
 		axle_inertia);
 	rear_axle_body = new btRigidBody(rb);
 	rear_axle_body->setFriction(100);
+	rear_axle_body->setDamping(0.5, 0.5);
 	rear_axle_body->setActivationState(DISABLE_DEACTIVATION);
 
 	btVector3 parentAxis(0.f, 0.f, 1.f);
@@ -186,9 +188,10 @@ void DynamicVehicle::createRearAxle() {
 	rear_axle_spring_left->setLimit(4, -1, 1);
 	rear_axle_spring_left->enableSpring(2, true);
 	rear_axle_spring_left->setStiffness(2, 900);
-	rear_axle_spring_left->setDamping(2, 10);
+	rear_axle_spring_left->setDamping(2, 0.1);
 	rear_axle_spring_left->setLimit(2, 0, 0.5);
 	rear_axle_spring_left->setEquilibriumPoint(2);
+	rear_axle_spring_left->setDbgDrawSize(0.8);
 
 	btVector3 right_position(1, -2, -1);
 	rear_axle_spring_right = new btHinge2Constraint(
@@ -198,9 +201,10 @@ void DynamicVehicle::createRearAxle() {
 	rear_axle_spring_right->setLimit(4, -1, 1);
 	rear_axle_spring_right->enableSpring(2, true);
 	rear_axle_spring_right->setStiffness(2, 900);
-	rear_axle_spring_right->setDamping(2, 10);
+	rear_axle_spring_right->setDamping(2, 0.10000);
 	rear_axle_spring_right->setLimit(2, 0, 0.5);
 	rear_axle_spring_right->setEquilibriumPoint(2);
+	rear_axle_spring_right->setDbgDrawSize(0.8);
 }
 
 btRigidBody *DynamicVehicle::getBody() {

@@ -63,11 +63,6 @@ void World::render(osgViewer::ViewerBase* viewer, GLDebugDrawer* debug_drawer) {
 		}
 		prevSimTime = currSimTime;
 
-		DynamicVehicle *vehicle = dynamic_cast<DynamicVehicle*>(getDynamicObject("vehicle"));
-		if(vehicle) {
-			std::cout << vehicle->toString() << std::endl;
-		}
-
 		m_dynamics->debugDrawWorld();
 		debug_drawer->EndDraw();
         viewer->frame(currSimTime);
