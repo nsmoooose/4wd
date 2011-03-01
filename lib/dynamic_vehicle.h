@@ -34,6 +34,7 @@ private:
 	btRigidBody* rear_axle_body;
 
 	osg::ref_ptr<osg::MatrixTransform> rear_axle_geometry;
+	osg::ref_ptr<osg::MatrixTransform> front_axle_geometry;
 };
 
 #endif

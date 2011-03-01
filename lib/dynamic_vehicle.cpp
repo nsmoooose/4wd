@@ -77,11 +77,20 @@ void DynamicVehicle::createFrontAxle() {
 
 	btVector3 axle_inertia(0, 0, 0);
 	axle_compound->calculateLocalInertia(axle_compound_mass, axle_inertia);
+
+	front_axle_geometry = new osg::MatrixTransform();
+	front_axle_geometry->setMatrix(osg::Matrix::translate(osg::Vec3(0, 2, -1)));
+
+	osg::ref_ptr<osg::MatrixTransform> front_axle_axle_geometry = new osg::MatrixTransform();
+	front_axle_axle_geometry->setMatrix(osg::Matrix::rotate(3.14/2, osg::Vec3(0.0, 1.0, 0.0)));
+	front_axle_axle_geometry->addChild(create_cylinder(axle_radius, axle_length));
+	front_axle_geometry->addChild(front_axle_axle_geometry.get());
+
 	btTransform axle_and_wheel_trans = btTransform::getIdentity();
 	axle_and_wheel_trans.setOrigin(btVector3(0, 2, -1));
     btRigidBody::btRigidBodyConstructionInfo rb(
 		axle_compound_mass,
-		new btDefaultMotionState(axle_and_wheel_trans),
+		new MotionState(front_axle_geometry.get()),
 		axle_compound,
 		axle_inertia);
 	front_axle_body = new btRigidBody(rb);
@@ -226,6 +235,7 @@ void DynamicVehicle::addToWorld(World* world) {
 	dynamics->addConstraint(rear_axle_spring_left, true);
 	dynamics->addConstraint(rear_axle_spring_right, true);
 	world->getRoot()->addChild(m_body->getNode());
+	world->getRoot()->addChild(front_axle_geometry.get());
 	world->getRoot()->addChild(rear_axle_geometry.get());
 }
 
