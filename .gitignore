@@ -6,6 +6,7 @@ demo1
 *.ive
 *.log
 *.o
-*.osg
+*.osgt
 *.ive
+TAGS
 

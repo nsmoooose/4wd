@@ -1,17 +1,18 @@
 #!/usr/bin/python
-import Blender
+import bpy
+import osg
 import sys
-
 export_file = sys.argv[len(sys.argv) - 1]
-print("Exporting to: %s" % export_file)
 
-
-import osgExport
-import osg.osgconf
-
-# osg.osgconf.DEBUG = True
 config = osg.osgconf.Config()
-config.filename = export_file
-osgExport.OpenSceneGraphExport(config)
+config.initFilePaths(export_file)
+config.export_anim = False
+config.apply_modifiers = False
+config.scene = bpy.context.scene
+config.json_materials = False
+config.json_shaders = False
 
-# Blender.Save(export_file, True)
+export = osg.osgdata.Export(config)
+print("Exporting to: %s" % config.filename)
+export.process()
+export.write()

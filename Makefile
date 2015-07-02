@@ -21,10 +21,10 @@ clean:
 	$(MAKE) -C lib $@
 	$(RM) 4wd *.o 4wd.osga models/*.ive models/*.osg models/*.log models/*.blend1
 
-%.osg: %.blend
+%.osgt: %.blend
 	blender -b $< -P models/blender_export.py -- $@
 
-%.ive: %.osg
+%.ive: %.osgt
 	osgconv $< $@
 
 install:
